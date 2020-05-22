@@ -1,14 +1,14 @@
 import firebase from 'firebase'
 
 const config = {
-  apiKey: process.env.VUE_APP_apiKey,
-  authDomain: process.env.VUE_APP_authDomain,
-  databaseURL: process.env.VUE_APP_databaseURL,
-  projectId: process.env.VUE_APP_projectId,
-  storageBucket: process.env.VUE_APP_storageBucket,
-  messagingSenderId: process.env.VUE_APP_messagingSenderId,
-  appId: process.env.VUE_APP_appId,
-  measurementId: process.env.VUE_APP_measurementId
+  apiKey: 'AIzaSyCANGwwIBzIEZuT_DGufxQd8CmCeQVO-Qs',
+  authDomain: 'nuxt-b-9156c.firebaseapp.com',
+  databaseURL: 'https://nuxt-b-9156c.firebaseio.com',
+  projectId: 'nuxt-b-9156c',
+  storageBucket: 'nuxt-b-9156c.appspot.com',
+  messagingSenderId: '1082878613716',
+  appId: '1:1082878613716:web:8e41f53286719113570341',
+  measurementId: 'G-Z5LYLBM3HP'
 }
 if (!firebase.apps.length) {
   firebase.initializeApp(config)
