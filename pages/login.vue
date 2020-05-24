@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <v-app id="inspire">
-      <v-app id="inspire">
+    <v-app>
+      <v-app>
         <v-content>
           <v-container v-if="isWaiting" class="fill-height" fluid>
             <p>読み込み中</p>

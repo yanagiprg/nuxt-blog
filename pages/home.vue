@@ -1,5 +1,5 @@
 <template>
   <div>
-    <nuxt-link to="/" class="link-text">Index</nuxt-link>
+    <nuxt-link to="/" class="text-link">Index</nuxt-link>
   </div>
 </template>

@@ -1,8 +1,3 @@
 <template>
-  <nuxt-link to="/home" class="link-text">HOME</nuxt-link>
+  <nuxt-link to="/home" class="text-link">HOME</nuxt-link>
 </template>
-<style>
-.link-text {
-  text-decoration: none;
-}
-</style>

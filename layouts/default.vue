@@ -1,21 +1,44 @@
 <template>
   <v-app>
-    <TheHeader />
+    <v-navigation-drawer v-model="drawer" app>
+      <v-list dense>
+        <nuxt-link to="/home" class="text-link">
+          <v-list-item link>
+            <v-list-item-action>
+              <v-icon>mdi-home</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
+                Home
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </nuxt-link>
+      </v-list>
+    </v-navigation-drawer>
+    <v-app-bar color="teal" app>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Nuxt Blog</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn to="/login" nuxt small outlined color="white">Login</v-btn>
+    </v-app-bar>
     <v-content>
       <nuxt />
     </v-content>
-    <TheFooter />
+    <v-footer color="teal" app>
+      <a
+        class="white--text"
+        href="https://github.com/yanagiprg/nuxt-blog/tree/01_firebase-init"
+        >&copy; source</a
+      >
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import TheHeader from '~/components/common/TheHeader'
-import TheFooter from '~/components/common/TheFooter'
-
 export default {
-  components: {
-    TheHeader,
-    TheFooter
-  }
+  data: () => ({
+    drawer: null
+  })
 }
 </script>
