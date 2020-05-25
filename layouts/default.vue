@@ -8,9 +8,7 @@
               <v-icon>mdi-home</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>
-                Home
-              </v-list-item-title>
+              <v-list-item-title>Home</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </nuxt-link>
@@ -23,7 +21,9 @@
       <v-btn to="/login" nuxt small outlined color="white">Login</v-btn>
     </v-app-bar>
     <v-content>
-      <nuxt />
+      <v-container fluid>
+        <nuxt />
+      </v-container>
     </v-content>
     <v-footer color="teal" app>
       <a
