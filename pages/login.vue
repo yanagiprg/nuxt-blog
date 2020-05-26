@@ -17,6 +17,7 @@
                       </v-toolbar>
                       <v-card-text>
                         <v-form>
+                          <p v-if="errorMessage">{{ errorMessage }}</p>
                           <v-text-field
                             v-model="email"
                             type="text"
@@ -37,15 +38,11 @@
                               label="新規登録"
                             ></v-checkbox>
                           </p>
+                          <v-btn color="teal" @click="passwordLogin">
+                            {{ register ? '新規登録' : 'ログイン' }}
+                          </v-btn>
                         </v-form>
                       </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="teal" @click="passwordLogin">{{
-                          register ? '新規登録' : 'ログイン'
-                        }}</v-btn>
-                        <p>{{ errorMessage }}</p>
-                      </v-card-actions>
                     </v-card>
                   </v-col>
                 </v-row>

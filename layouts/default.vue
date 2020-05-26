@@ -2,7 +2,7 @@
   <v-app>
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
-        <nuxt-link to="/home" class="text-link">
+        <nuxt-link to="/articles" class="text-link">
           <v-list-item link>
             <v-list-item-action>
               <v-icon>mdi-home</v-icon>
@@ -28,7 +28,8 @@
     <v-footer color="teal" app>
       <a
         class="white--text"
-        href="https://github.com/yanagiprg/nuxt-blog/tree/01_firebase-init"
+        href="https://github.com/yanagiprg/nuxt-blog/"
+        target="_blank"
         >&copy; source</a
       >
     </v-footer>

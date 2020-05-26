@@ -1,5 +1,6 @@
 <template>
   <v-container fluid>
+    <nuxt-link to="/form" class="text-link">新規投稿</nuxt-link>
     <v-row class="mb-2">
       <v-col
         v-for="(article, index) in articles"

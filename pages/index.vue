@@ -1,3 +1,3 @@
 <template>
-  <nuxt-link to="/home" class="text-link">HOME</nuxt-link>
+  <nuxt-link to="/articles" class="text-link">HOME</nuxt-link>
 </template>
