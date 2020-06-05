@@ -11,7 +11,7 @@
             <v-text-field v-model="text" label="Text"></v-text-field>
           </v-col>
         </v-row>
-        <v-btn class="mr-4" small outlined @click="addArticle()">submit</v-btn>
+        <v-btn class="mr-4" small outlined @click="addArticle">submit</v-btn>
         <v-btn small outlined @click="resetForm()">reset</v-btn>
       </v-container>
     </v-form>
@@ -28,7 +28,7 @@
           <v-card class="article-card mx-auto teal" max-height="100px">
             <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
             <v-card-text>{{ article.text }}</v-card-text>
-            <v-btn outlined @click="removeArticle(index)">Delete</v-btn>
+            <v-btn outlined @click="deleteArticle">Delete</v-btn>
           </v-card>
         </v-col>
       </v-row>
@@ -37,30 +37,27 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import { mapGetters, mapMutations } from 'vuex'
+
 export default {
   data() {
     return {
-      articles: [],
       title: '',
       text: ''
-      // form: {
-      //   title: '',
-      //   text: ''
-      // }
     }
+  },
+  computed: {
+    ...mapGetters(['articles'])
   },
 
   methods: {
     addArticle() {
-      // const article = Object.assign({}, this.form)
-      this.articles.push({
-        title: this.title,
-        text: this.text
-      })
+      this.$store.commit('addArticle', { title: this.title, text: this.text })
       this.resetForm()
     },
-    removeArticle(index) {
-      this.articles.splice(index, 1)
+    deleteArticle(index) {
+      this.$store.commit('deleteArticle', index)
     },
     resetForm() {
       this.title = ''
