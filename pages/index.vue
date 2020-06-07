@@ -38,9 +38,12 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
+  async fetch({ store }) {
+    await store.dispatch('getArticles')
+  },
   data() {
     return {
       title: '',
@@ -53,7 +56,7 @@ export default {
 
   methods: {
     addArticle() {
-      this.$store.commit('addArticle', { title: this.title, text: this.text })
+      this.$store.dispatch('addArticle', { title: this.title, text: this.text })
       this.resetForm()
     },
     deleteArticle(index) {
