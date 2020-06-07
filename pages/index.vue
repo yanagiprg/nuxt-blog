@@ -18,17 +18,11 @@
     <!-- Cards -->
     <v-container fluid>
       <v-row class="mb-2">
-        <v-col
-          v-for="(article, index) in articles"
-          :key="index"
-          cols="4"
-          md="3"
-          xl="2"
-        >
+        <v-col v-for="(article, index) in articles" :key="index" cols="4" md="3" xl="2">
           <v-card class="article-card mx-auto teal" max-height="100px">
             <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
             <v-card-text>{{ article.text }}</v-card-text>
-            <v-btn outlined @click="deleteArticle">Delete</v-btn>
+            <v-btn outlined @click="deleteArticle(index)">Delete</v-btn>
           </v-card>
         </v-col>
       </v-row>
@@ -41,7 +35,7 @@
 import { mapGetters } from 'vuex'
 
 export default {
-  async fetch({ store }) {
+  async asyncData({ store }) {
     await store.dispatch('getArticles')
   },
   data() {
@@ -60,7 +54,7 @@ export default {
       this.resetForm()
     },
     deleteArticle(index) {
-      this.$store.commit('deleteArticle', index)
+      this.$store.dispatch('deleteArticle', this.articles[index].id)
     },
     resetForm() {
       this.title = ''

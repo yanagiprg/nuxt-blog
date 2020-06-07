@@ -47,13 +47,18 @@ export const actions = {
             console.log(article, res.id)
           })
       })
+  },
+  deleteArticle({ dispatch }, id) {
+    firebase
+      .firestore()
+      .collection('articles')
+      .doc(id)
+      .delete()
+    dispatch('getArticles')
   }
 }
 
 export const mutations = {
-  // addArticle(state, payload) {
-  //   state.articles.push(payload)
-  // },
   getArticles(state, articles) {
     state.articles = articles
   },
