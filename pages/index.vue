@@ -18,7 +18,13 @@
     <!-- Cards -->
     <v-container fluid>
       <v-row class="mb-2">
-        <v-col v-for="(article, index) in articles" :key="index" cols="4" md="3" xl="2">
+        <v-col
+          v-for="(article, index) in articles"
+          :key="index"
+          cols="4"
+          md="3"
+          xl="2"
+        >
           <v-card class="article-card mx-auto teal" max-height="100px">
             <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
             <v-card-text>{{ article.text }}</v-card-text>
@@ -32,7 +38,7 @@
 
 <script>
 // eslint-disable-next-line no-unused-vars
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   async asyncData({ store }) {
@@ -46,6 +52,10 @@ export default {
   },
   computed: {
     ...mapGetters(['articles'])
+  },
+
+  created() {
+    this.$store.dispatch('getArticles')
   },
 
   methods: {
