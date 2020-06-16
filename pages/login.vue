@@ -38,9 +38,19 @@
                               label="新規登録"
                             ></v-checkbox>
                           </p>
-                          <v-btn color="teal" @click="passwordLogin">
-                            {{ register ? '新規登録' : 'ログイン' }}
-                          </v-btn>
+                          <v-btn
+                            color="teal"
+                            class="mb-4 mr-4"
+                            @click="signup"
+                            >{{ register ? '新規登録' : 'ログイン' }}</v-btn
+                          >
+                          <v-btn
+                            color="teal"
+                            outlined
+                            class="mb-4"
+                            @click="loginWithGoogle"
+                            >Google</v-btn
+                          >
                         </v-form>
                       </v-card-text>
                     </v-card>
@@ -50,7 +60,7 @@
             </v-container>
             <v-container v-else>
               <p>{{ user.email }}でログイン中</p>
-              <v-btn color="teal" @click="logOut">ログアウト</v-btn>
+              <v-btn color="teal" @click="logout">ログアウト</v-btn>
             </v-container>
           </v-container>
         </v-content>
@@ -63,7 +73,7 @@
 import firebase from '@/plugins/firebase'
 
 export default {
-  asyncData() {
+  data() {
     return {
       register: false,
       isWaiting: true,
@@ -88,33 +98,19 @@ export default {
     })
   },
   methods: {
-    passwordLogin() {
-      const email = this.email
-      const password = this.password
+    signup() {
+      const form = { email: this.email, password: this.password }
       if (this.register) {
-        firebase
-          .auth()
-          .createUserWithEmailAndPassword(email, password)
-          .catch(
-            function(error) {
-              const errorMessage = error.message
-              this.errorMessage = errorMessage
-            }.bind(this)
-          )
+        this.$store.dispatch('login/createUser', form)
       } else {
-        firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .catch(
-            function(error) {
-              const errorMessage = error.message
-              this.errorMessage = errorMessage
-            }.bind(this)
-          )
+        this.$store.dispatch('login/loginWithPassword', form)
       }
     },
-    logOut() {
-      firebase.auth().signOut()
+    loginWithGoogle() {
+      this.$store.dispatch('login/loginWithGoogle')
+    },
+    logout() {
+      this.$store.dispatch('login/logout')
     }
   }
 }

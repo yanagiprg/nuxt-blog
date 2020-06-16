@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable object-shorthand */
 import firebase from '~/plugins/firebase'
 
 export const state = () => ({
@@ -21,7 +19,6 @@ export const actions = {
       .then((res) => {
         const articles = []
         res.forEach((x) => {
-          console.log(x.data())
           articles.push(x.data())
         })
         commit('getArticles', articles)
@@ -44,7 +41,6 @@ export const actions = {
           })
           .then(() => {
             dispatch('getArticles', article)
-            console.log(article, res.id)
           })
       })
   },
