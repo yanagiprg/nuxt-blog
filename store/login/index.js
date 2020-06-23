@@ -1,23 +1,55 @@
 /* eslint-disable no-empty-pattern */
 import firebase from '~/plugins/firebase'
 
+const db = firebase.firestore()
+const usersRef = db.collection('users')
+
 export const state = () => ({
   userUid: '',
-  userName: ''
+  userName: '',
+  users: []
 })
 
-export const mutations = {
-  setUserUid(state, userUid) {
-    state.userUid = userUid
+export const getters = {
+  getUserUid(state) {
+    return state.userUid
   },
-  setUserName(state, userName) {
-    state.userName = userName
+  getUserName(state) {
+    return state.userName
+  },
+  users(state) {
+    return state.users
   }
 }
 
 export const actions = {
-  async createUser({}, { email, password }) {
-    console.log(email, password)
+  getUsers({ commit }) {
+    usersRef.get().then((snapShot) => {
+      const users = []
+      snapShot.forEach((doc) => {
+        users.push(doc.data())
+      })
+      commit('getUsers', users)
+    })
+  },
+
+  createUser({ dispatch }, user) {
+    usersRef
+      .add({})
+      .then((res) => {
+        console.log(user.name)
+        usersRef.doc(res.id).set({
+          id: res.id,
+          name: user.name,
+          email: user.email
+        })
+      })
+      .then(() => {
+        dispatch('getUsers', user)
+      })
+  },
+
+  async signup({}, { email, password }) {
     await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -60,11 +92,14 @@ export const actions = {
   }
 }
 
-export const getters = {
-  getUserUid(state) {
-    return state.userUid
+export const mutations = {
+  setUserUid(state, userUid) {
+    state.userUid = userUid
   },
-  getUserName(state) {
-    return state.userName
+  setUserName(state, userName) {
+    state.userName = userName
+  },
+  getUsers(state, users) {
+    state.users = users
   }
 }

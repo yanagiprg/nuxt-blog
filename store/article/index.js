@@ -1,9 +1,7 @@
-/* eslint-disable no-use-before-define */
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
-const usersRef = db.collection('users')
-const userA = usersRef.doc('userA').collection('articles')
+const articlesRef = db.collection('articles')
 
 export const state = () => ({
   articles: []
@@ -17,7 +15,7 @@ export const getters = {
 
 export const actions = {
   getArticles({ commit }) {
-    userA.get().then((snapShot) => {
+    articlesRef.get().then((snapShot) => {
       const articles = []
       snapShot.forEach((doc) => {
         articles.push(doc.data())
@@ -25,10 +23,9 @@ export const actions = {
       commit('getArticles', articles)
     })
   },
-
   addArticle({ dispatch }, article) {
-    userA.add({}).then((res) => {
-      userA
+    articlesRef.add({}).then((res) => {
+      articlesRef
         .doc(res.id)
         .set({
           id: res.id,
@@ -40,11 +37,9 @@ export const actions = {
         })
     })
   },
-
   deleteArticle({ dispatch }, id) {
-    userA.doc(id).delete()
+    articlesRef.doc(id).delete()
     dispatch('getArticles')
-    console.log('deleted')
   }
 }
 

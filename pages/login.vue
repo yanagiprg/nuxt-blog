@@ -19,12 +19,17 @@
                         <v-form>
                           <p v-if="errorMessage">{{ errorMessage }}</p>
                           <v-text-field
+                            v-model="name"
+                            type="text"
+                            placeholder="name"
+                            prepend-icon="mdi-face"
+                          ></v-text-field>
+                          <v-text-field
                             v-model="email"
                             type="text"
                             placeholder="email"
                             prepend-icon="mdi-email"
                           ></v-text-field>
-
                           <v-text-field
                             v-model="password"
                             type="password"
@@ -73,12 +78,16 @@
 import firebase from '@/plugins/firebase'
 
 export default {
+  async asyncData({ store }) {
+    await store.dispatch('login/getUsers')
+  },
+
   data() {
     return {
       register: false,
       isWaiting: true,
       isLogin: false,
-      user: [],
+      name: '',
       email: '',
       password: '',
       errorMessage: ''
@@ -97,10 +106,20 @@ export default {
       }
     })
   },
+
+  created() {
+    this.$store.dispatch('login/getUsers')
+  },
+
   methods: {
     signup() {
-      const form = { email: this.email, password: this.password }
+      const form = {
+        email: this.email,
+        password: this.password,
+        name: this.name
+      }
       if (this.register) {
+        this.$store.dispatch('login/signup', form)
         this.$store.dispatch('login/createUser', form)
       } else {
         this.$store.dispatch('login/loginWithPassword', form)
