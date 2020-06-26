@@ -2,11 +2,11 @@
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
-const usersRef = db.collection('users')
-const userA = usersRef.doc('userA').collection('articles')
+// const usersRef = db.collection('users')
 
 export const state = () => ({
-  articles: []
+  articles: [],
+  user: null
 })
 
 export const getters = {
@@ -16,33 +16,43 @@ export const getters = {
 }
 
 export const actions = {
-  getArticles({ commit }) {
-    userA.get().then((snapShot) => {
-      const articles = []
-      snapShot.forEach((doc) => {
-        articles.push(doc.data())
+  getArticles({ dispatch }, user) {
+    db.doc(`users/${user.uid}`)
+      .collection('articles')
+      .get()
+      .then((snapShot) => {
+        const articles = []
+        snapShot.forEach((doc) => {
+          articles.push(doc.data())
+        })
+        dispatch('getArticles', articles)
       })
-      commit('getArticles', articles)
-    })
   },
 
-  addArticle({ dispatch }, article) {
-    userA.add({}).then((res) => {
-      userA
-        .doc(res.id)
-        .set({
-          id: res.id,
-          title: article.title,
-          text: article.text
-        })
-        .then(() => {
-          dispatch('getArticles', article)
-        })
-    })
+  addArticle({ dispatch }, article, user) {
+    db.doc(`users/${user.uid}`)
+      .collection('articles')
+      .add({})
+      .then((res) => {
+        db.doc(`users/${user.uid}`)
+          .collection('articles')
+          .doc(res.id)
+          .set({
+            id: res.id,
+            title: article.title,
+            text: article.text
+          })
+          .then(() => {
+            dispatch('getArticles', article)
+          })
+      })
   },
 
-  deleteArticle({ dispatch }, id) {
-    userA.doc(id).delete()
+  deleteArticle({ dispatch }, id, user) {
+    db.doc(`users/${user.uid}`)
+      .collection('articles')
+      .doc(id)
+      .delete()
     dispatch('getArticles')
     console.log('deleted')
   }

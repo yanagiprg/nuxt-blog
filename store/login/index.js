@@ -17,22 +17,24 @@ export const getters = {
   getUserName(state) {
     return state.userName
   },
-  users(state) {
+  getUsers(state) {
     return state.users
   }
 }
 
-export const actions = {
-  getUsers({ commit }) {
-    usersRef.get().then((snapShot) => {
-      const users = []
-      snapShot.forEach((doc) => {
-        users.push(doc.data())
-      })
-      commit('getUsers', users)
-    })
+export const mutations = {
+  setUserUid(state, userUid) {
+    state.userUid = userUid
   },
+  setUserName(state, userName) {
+    state.userName = userName
+  },
+  setUsers(state, users) {
+    state.users = users
+  }
+}
 
+export const actions = {
   createUser({ dispatch }, user) {
     usersRef
       .add({})
@@ -89,17 +91,5 @@ export const actions = {
   logout() {
     firebase.auth().signOut()
     console.log('succeed in logout')
-  }
-}
-
-export const mutations = {
-  setUserUid(state, userUid) {
-    state.userUid = userUid
-  },
-  setUserName(state, userName) {
-    state.userName = userName
-  },
-  getUsers(state, users) {
-    state.users = users
   }
 }

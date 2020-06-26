@@ -1,3 +1,4 @@
+<!--
 <template>
   <v-app>
     <v-form>
@@ -56,3 +57,4 @@ export default {
   }
 }
 </script>
+-->

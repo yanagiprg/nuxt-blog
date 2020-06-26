@@ -78,10 +78,6 @@
 import firebase from '@/plugins/firebase'
 
 export default {
-  async asyncData({ store }) {
-    await store.dispatch('login/getUsers')
-  },
-
   data() {
     return {
       register: false,
@@ -93,11 +89,13 @@ export default {
       errorMessage: ''
     }
   },
-  mounted() {
-    firebase.auth().onAuthStateChanged((user) => {
+
+  async mounted() {
+    await firebase.auth().onAuthStateChanged((user) => {
       this.isWaiting = false
       this.errorMessage = ''
       if (user) {
+        this.userId = user.uid
         this.isLogin = true
         this.user = user
       } else {
@@ -105,10 +103,6 @@ export default {
         this.user = []
       }
     })
-  },
-
-  created() {
-    this.$store.dispatch('login/getUsers')
   },
 
   methods: {

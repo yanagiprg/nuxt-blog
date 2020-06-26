@@ -39,23 +39,43 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import { mapGetters } from 'vuex'
+import firebase from '@/plugins/firebase'
 
 export default {
   async asyncData({ store }) {
-    await store.dispatch('getArticles')
+    await store.dispatch('setArticles')
   },
   data() {
     return {
       title: '',
-      text: ''
+      text: '',
+      isWaiting: true,
+      isLogin: false
     }
   },
   computed: {
     ...mapGetters(['articles'])
   },
 
+  async mounted() {
+    await firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.userId = user.uid
+      }
+      this.isWaiting = false
+      this.errorMessage = ''
+      if (user) {
+        this.isLogin = true
+        this.user = user
+      } else {
+        this.isLogin = false
+        this.user = []
+      }
+    })
+  },
+
   created() {
-    this.$store.dispatch('getArticles')
+    this.$store.dispatch('setArticles')
   },
 
   methods: {

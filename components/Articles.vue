@@ -13,7 +13,6 @@
           <v-card class="article-card mx-auto teal" max-height="100px">
             <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
             <v-card-text>{{ article.text }}</v-card-text>
-            {{ user.displayName }}
             <v-btn
               outlined
               @click="$store.dispatch('/deleteArticle', articles[index].id)"
