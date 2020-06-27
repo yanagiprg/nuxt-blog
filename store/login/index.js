@@ -7,7 +7,8 @@ const usersRef = db.collection('users')
 export const state = () => ({
   userUid: '',
   userName: '',
-  users: []
+  users: [],
+  user: null
 })
 
 export const getters = {
@@ -38,10 +39,11 @@ export const actions = {
   createUser({ dispatch }, user) {
     usersRef
       .add({})
-      .then((res) => {
+      .then((result) => {
+        const user = result.user
         console.log(user.name)
-        usersRef.doc(res.id).set({
-          id: res.id,
+        usersRef.doc(user.uid).set({
+          id: user.uid,
           name: user.name,
           email: user.email
         })

@@ -18,7 +18,12 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Nuxt Blog</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn to="/login" nuxt small outlined color="white">Login</v-btn>
+      <v-btn v-if="!isLogin" to="/login" nuxt small outlined color="white"
+        >Login</v-btn
+      >
+      <v-btn v-else nuxt small outlined color="white" @click="logout"
+        >Logout</v-btn
+      >
     </v-app-bar>
     <v-content>
       <v-container fluid>
@@ -37,9 +42,32 @@
 </template>
 
 <script>
+import firebase from '@/plugins/firebase'
+
 export default {
   data: () => ({
-    drawer: null
-  })
+    drawer: null,
+    isLogin: false,
+    email: ''
+  }),
+
+  async mounted() {
+    await firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.userId = user.uid
+        this.isLogin = true
+        this.user = user
+      } else {
+        this.isLogin = false
+        this.user = []
+      }
+    })
+  },
+
+  methods: {
+    logout() {
+      this.$store.dispatch('login/logout')
+    }
+  }
 }
 </script>

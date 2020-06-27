@@ -2,7 +2,7 @@
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
-// const usersRef = db.collection('users')
+const articlesRef = db.collection('articles')
 
 export const state = () => ({
   articles: [],
@@ -14,55 +14,56 @@ export const getters = {
     return state.articles
   }
 }
+export const mutations = {
+  getArticles(state, articles) {
+    state.articles = articles
+  },
+  setArticle(state, index) {
+    state.articles.splice(index, 1)
+  }
+}
 
 export const actions = {
-  getArticles({ dispatch }, user) {
-    db.doc(`users/${user.uid}`)
-      .collection('articles')
-      .get()
-      .then((snapShot) => {
-        const articles = []
-        snapShot.forEach((doc) => {
-          articles.push(doc.data())
+  async getArticles({ dispatch }, user) {
+    await // db
+    // .doc(`users/${user.uid}`)
+    // .collection('articles')
+    articlesRef.get().then((snapShot) => {
+      const articles = []
+      snapShot.forEach((doc) => {
+        articles.push(doc.data())
+      })
+      dispatch('getArticles', articles)
+    })
+  },
+
+  async addArticle({ dispatch }, article, user) {
+    await // db
+    // .doc(`users/${user.uid}`)
+    // .collection('articles')
+    articlesRef.add({}).then((res) => {
+      // db.doc(`users/${user.uid}`)
+      //   .collection('articles')
+      articlesRef
+        .doc(res.id)
+        .set({
+          id: res.id,
+          title: article.title,
+          text: article.text
         })
-        dispatch('getArticles', articles)
-      })
+        .then(() => {
+          dispatch('getArticles', article)
+        })
+    })
   },
 
-  addArticle({ dispatch }, article, user) {
-    db.doc(`users/${user.uid}`)
-      .collection('articles')
-      .add({})
-      .then((res) => {
-        db.doc(`users/${user.uid}`)
-          .collection('articles')
-          .doc(res.id)
-          .set({
-            id: res.id,
-            title: article.title,
-            text: article.text
-          })
-          .then(() => {
-            dispatch('getArticles', article)
-          })
-      })
-  },
-
-  deleteArticle({ dispatch }, id, user) {
-    db.doc(`users/${user.uid}`)
+  async deleteArticle({ dispatch }, id, user) {
+    await db
+      .doc(`users/${user.uid}`)
       .collection('articles')
       .doc(id)
       .delete()
     dispatch('getArticles')
     console.log('deleted')
-  }
-}
-
-export const mutations = {
-  getArticles(state, articles) {
-    state.articles = articles
-  },
-  deleteArticle(state, index) {
-    state.articles.splice(index, 1)
   }
 }

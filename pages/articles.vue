@@ -43,16 +43,17 @@ import firebase from '@/plugins/firebase'
 
 export default {
   async asyncData({ store }) {
-    await store.dispatch('setArticles')
+    await store.dispatch('getArticles')
   },
+
   data() {
     return {
       title: '',
       text: '',
-      isWaiting: true,
       isLogin: false
     }
   },
+
   computed: {
     ...mapGetters(['articles'])
   },
@@ -61,10 +62,6 @@ export default {
     await firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.userId = user.uid
-      }
-      this.isWaiting = false
-      this.errorMessage = ''
-      if (user) {
         this.isLogin = true
         this.user = user
       } else {
@@ -75,7 +72,7 @@ export default {
   },
 
   created() {
-    this.$store.dispatch('setArticles')
+    this.$store.dispatch('getArticles')
   },
 
   methods: {
