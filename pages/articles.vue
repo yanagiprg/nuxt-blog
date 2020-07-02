@@ -6,11 +6,11 @@
           <v-col cols="12" md="4" required>
             <v-text-field v-model="title" label="Title"></v-text-field>
           </v-col>
-
           <v-col cols="12" md="4">
             <v-text-field v-model="text" label="Text"></v-text-field>
           </v-col>
         </v-row>
+
         <v-btn class="mr-4" small outlined @click="addArticle">submit</v-btn>
         <v-btn small outlined @click="resetForm()">reset</v-btn>
       </v-container>
@@ -28,6 +28,7 @@
           <v-card class="article-card mx-auto teal" max-height="100px">
             <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
             <v-card-text>{{ article.text }}</v-card-text>
+            {{ user.user.name }}
             <v-btn outlined @click="deleteArticle(index)">Delete</v-btn>
           </v-card>
         </v-col>
@@ -42,15 +43,14 @@ import { mapGetters } from 'vuex'
 import firebase from '@/plugins/firebase'
 
 export default {
-  async asyncData({ store }) {
-    await store.dispatch('getArticles')
+  async asyncData({ store }, user) {
+    await store.dispatch('getArticles', user)
   },
 
   data() {
     return {
       title: '',
-      text: '',
-      isLogin: false
+      text: ''
     }
   },
 
@@ -71,17 +71,17 @@ export default {
     })
   },
 
-  created() {
-    this.$store.dispatch('getArticles')
-  },
-
   methods: {
-    addArticle() {
-      this.$store.dispatch('addArticle', { title: this.title, text: this.text })
+    addArticle(user) {
+      this.$store.dispatch(
+        'addArticle',
+        { title: this.title, text: this.text },
+        user
+      )
       this.resetForm()
     },
-    deleteArticle(index) {
-      this.$store.dispatch('deleteArticle', this.articles[index].id)
+    deleteArticle(index, user) {
+      this.$store.dispatch('deleteArticle', this.articles[index].id, user)
     },
     resetForm() {
       this.title = ''

@@ -41,7 +41,6 @@ export const actions = {
       .add({})
       .then((result) => {
         const user = result.user
-        console.log(user.name)
         usersRef.doc(user.uid).set({
           id: user.uid,
           name: user.name,
@@ -53,10 +52,10 @@ export const actions = {
       })
   },
 
-  async signup({}, { email, password }) {
+  async signup({}, { name, email, password }) {
     await firebase
       .auth()
-      .createUserWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(name, email, password)
       .catch(function(error) {
         const errorCode = error.code
         console.log('error : ' + errorCode)

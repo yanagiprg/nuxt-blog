@@ -2,7 +2,6 @@
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
-const articlesRef = db.collection('articles')
 
 export const state = () => ({
   articles: [],
@@ -14,47 +13,42 @@ export const getters = {
     return state.articles
   }
 }
+
 export const mutations = {
   getArticles(state, articles) {
     state.articles = articles
   },
-  setArticle(state, index) {
+
+  deleteArticle(state, index) {
     state.articles.splice(index, 1)
   }
 }
 
 export const actions = {
-  async getArticles({ dispatch }, user) {
-    await // db
-    // .doc(`users/${user.uid}`)
-    // .collection('articles')
-    articlesRef.get().then((snapShot) => {
-      const articles = []
-      snapShot.forEach((doc) => {
-        articles.push(doc.data())
-      })
-      dispatch('getArticles', articles)
+  async getArticles({ commit }, user) {
+    const articles = []
+    const snapShot = await db
+      .doc(`users/${user.uid}`)
+      .collection('articles')
+      .get()
+    snapShot.forEach((doc) => {
+      articles.push(doc.data())
     })
+    commit('getArticles', articles)
   },
 
-  async addArticle({ dispatch }, article, user) {
-    await // db
-    // .doc(`users/${user.uid}`)
-    // .collection('articles')
-    articlesRef.add({}).then((res) => {
-      // db.doc(`users/${user.uid}`)
-      //   .collection('articles')
-      articlesRef
-        .doc(res.id)
-        .set({
-          id: res.id,
-          title: article.title,
-          text: article.text
-        })
-        .then(() => {
-          dispatch('getArticles', article)
-        })
-    })
+  async addArticle({ commit }, article, user) {
+    const res = await db.doc(`users/${user.uid}`).collection('articles')
+    await db
+      .doc(`users/${user.uid}`)
+      .collection('articles')
+      .doc(res.id)
+      .set({
+        id: res.id,
+        title: article.title,
+        text: article.text
+      })
+    commit('getArticles', article, user)
   },
 
   async deleteArticle({ dispatch }, id, user) {
@@ -64,6 +58,5 @@ export const actions = {
       .doc(id)
       .delete()
     dispatch('getArticles')
-    console.log('deleted')
   }
 }
