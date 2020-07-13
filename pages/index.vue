@@ -1,3 +1,8 @@
+<template>
+  <v-app>
+    <nuxt-link to="/articles">Articles</nuxt-link>
+  </v-app>
+</template>
 <!--
 <template>
   <v-app>

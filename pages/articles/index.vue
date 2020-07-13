@@ -26,9 +26,10 @@
           xl="2"
         >
           <v-card class="article-card mx-auto teal" max-height="100px">
-            <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
-            <v-card-text>{{ article.text }}</v-card-text>
-            {{ user.user.name }}
+            <nuxt-link to="/articles/:id" class="text-link">
+              <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
+              <v-card-text>{{ article.text }}</v-card-text>
+            </nuxt-link>
             <v-btn outlined @click="deleteArticle(index)">Delete</v-btn>
           </v-card>
         </v-col>
@@ -43,8 +44,8 @@ import { mapGetters } from 'vuex'
 import firebase from '@/plugins/firebase'
 
 export default {
-  async asyncData({ store }, user) {
-    await store.dispatch('getArticles', user)
+  async asyncData({ store }) {
+    await store.dispatch('getArticles')
   },
 
   data() {

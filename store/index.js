@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-pattern */
 /* eslint-disable no-use-before-define */
 import firebase from '~/plugins/firebase'
 
@@ -28,7 +29,7 @@ export const actions = {
   async getArticles({ commit }, user) {
     const articles = []
     const snapShot = await db
-      .doc(`users/${user.uid}`)
+      // .doc(`users/${user.uid}`)
       .collection('articles')
       .get()
     snapShot.forEach((doc) => {
@@ -37,10 +38,13 @@ export const actions = {
     commit('getArticles', articles)
   },
 
-  async addArticle({ commit }, article, user) {
-    const res = await db.doc(`users/${user.uid}`).collection('articles')
+  async addArticle({ dispatch }, article, user) {
+    const res = await db
+      // .doc(`users/${user.uid}`)
+      .collection('articles')
+      .add({})
     await db
-      .doc(`users/${user.uid}`)
+      // .doc(`users/${user.uid}`)
       .collection('articles')
       .doc(res.id)
       .set({
@@ -48,15 +52,33 @@ export const actions = {
         title: article.title,
         text: article.text
       })
-    commit('getArticles', article, user)
+    dispatch(
+      'getArticles',
+      article
+      // user
+    )
   },
 
   async deleteArticle({ dispatch }, id, user) {
     await db
-      .doc(`users/${user.uid}`)
+      // .doc(`users/${user.uid}`)
       .collection('articles')
       .doc(id)
       .delete()
-    dispatch('getArticles')
+    dispatch(
+      'getArticles'
+      // user
+    )
+  },
+
+  async editArticle({}, id) {
+    const snapShot = await db
+      // .doc(`users/${user.uid}`)
+      .collection('articles')
+      .doc(id)
+      .get()
+    const article = await snapShot.data()
+    article.id = snapShot.id
+    return article
   }
 }
