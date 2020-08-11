@@ -11,13 +11,7 @@
             <v-text-field v-model="text" label="Text"></v-text-field>
           </v-col>
         </v-row>
-        <v-btn
-          class="mr-4"
-          small
-          outlined
-          @click="$store.dispatch('addArticle')"
-          >submit</v-btn
-        >
+        <v-btn class="mr-4" small outlined @click="addArticle()">submit</v-btn>
         <v-btn small outlined @click="resetForm()">reset</v-btn>
       </v-container>
     </v-form>
@@ -33,15 +27,11 @@ export default {
     }
   },
 
-  created() {
-    this.$store.dispatch('getArticles')
-  },
-
   methods: {
-    // addArticle() {
-    //   this.$store.dispatch('addArticle', { title: this.title, text: this.text })
-    //   this.resetForm()
-    // },
+    addArticle() {
+      this.$store.dispatch('addArticle', { title: this.title, text: this.text })
+      this.resetForm()
+    },
     resetForm() {
       this.title = ''
       this.text = ''

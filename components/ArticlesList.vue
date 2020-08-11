@@ -1,23 +1,8 @@
 <template>
   <v-app>
-    <v-form>
-      <v-container>
-        <v-row>
-          <v-col cols="12" md="4" required>
-            <v-text-field v-model="title" label="Title"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-text-field v-model="text" label="Text"></v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-btn class="mr-4" small outlined @click="addArticle">submit</v-btn>
-        <v-btn small outlined @click="resetForm()">reset</v-btn>
-      </v-container>
-    </v-form>
-    <!-- Cards -->
+    <!-- Article List -->
     <v-container fluid>
-      <v-row class="pb-2">
+      <v-row class="mb-2">
         <v-col
           v-for="(article, index) in articles"
           :key="index"
@@ -26,18 +11,10 @@
           xl="2"
           @click="editArticle(index)"
         >
-          <v-card class="card-article mx-auto teal" max-height="400px">
-            <!-- <div @click="editArticle(index)"> -->
+          <v-card class="article-card mx-auto teal" max-height="100px">
             <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
-            <v-card-text class="text-center">{{ article.text }}</v-card-text>
-            <!-- </div> -->
-            <v-btn
-              x-small
-              outlined
-              class="card-btn ml-2 mb-2"
-              @click="deleteArticle(index)"
-              >Delete</v-btn
-            >
+            <v-card-text>{{ article.text }}</v-card-text>
+            <v-btn outlined @click="deleteArticle(index)">Delete</v-btn>
           </v-card>
         </v-col>
       </v-row>
@@ -80,16 +57,8 @@ export default {
   },
 
   methods: {
-    addArticle() {
-      this.$store.dispatch('addArticle', { title: this.title, text: this.text })
-      this.resetForm()
-    },
     deleteArticle(index) {
       this.$store.dispatch('deleteArticle', this.articles[index].id)
-    },
-    resetForm() {
-      this.title = ''
-      this.text = ''
     },
     editArticle(index) {
       this.$store.dispatch('editArticle', this.articles[index].id)

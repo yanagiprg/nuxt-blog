@@ -1,5 +1,6 @@
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-use-before-define */
+
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
@@ -13,6 +14,9 @@ export const getters = {
   articles(state) {
     return state.articles
   }
+  // article(state) {
+  //   return state.article
+  // }
 }
 
 export const mutations = {
@@ -31,6 +35,7 @@ export const actions = {
     const snapShot = await db
       // .doc(`users/${user.uid}`)
       .collection('articles')
+      .orderBy('updatedAt', 'desc')
       .get()
     snapShot.forEach((doc) => {
       articles.push(doc.data())
@@ -50,7 +55,8 @@ export const actions = {
       .set({
         id: res.id,
         title: article.title,
-        text: article.text
+        text: article.text,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       })
     dispatch(
       'getArticles',
@@ -77,8 +83,29 @@ export const actions = {
       .collection('articles')
       .doc(id)
       .get()
+    const articleIndex = this.state.articles.findIndex(
+      (article) => article.id === snapShot.id
+    )
+    this.state.articles[articleIndex] = snapShot.data()
+  },
+
+  async showArticle({}, id) {
+    const snapShot = await db
+      // .doc(`users/${user.uid}`)
+      .collection('articles')
+      .doc(id)
+      .get()
     const article = await snapShot.data()
-    article.id = snapShot.id
     return article
+  },
+
+  async updateArticle({ dispatch }, { id, form }) {
+    const articleRef = await db.collection('articles').doc(id)
+    await articleRef.update({
+      title: form.title,
+      text: form.text,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    dispatch('getArticles', form)
   }
 }
