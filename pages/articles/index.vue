@@ -1,69 +1,24 @@
 <template>
   <v-app>
-    <v-form>
-      <v-container>
-        <v-row>
-          <v-col cols="12" md="4" required>
-            <v-text-field v-model="title" label="Title"></v-text-field>
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-text-field v-model="text" label="Text"></v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-btn class="mr-4" small outlined @click="addArticle">submit</v-btn>
-        <v-btn small outlined @click="resetForm()">reset</v-btn>
-      </v-container>
-    </v-form>
-    <!-- Cards -->
-    <v-container fluid>
-      <v-row class="pb-2">
-        <v-col
-          v-for="(article, index) in articles"
-          :key="index"
-          cols="4"
-          md="3"
-          xl="2"
-          @click="editArticle(index)"
-        >
-          <v-card class="card-article mx-auto teal" max-height="400px">
-            <!-- <div @click="editArticle(index)"> -->
-            <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
-            <v-card-text class="text-center">{{ article.text }}</v-card-text>
-            <!-- </div> -->
-            <v-btn
-              x-small
-              outlined
-              class="card-btn ml-2 mb-2"
-              @click="deleteArticle(index)"
-              >Delete</v-btn
-            >
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+    <Form />
+    <ArticlesList />
   </v-app>
 </template>
 
 <script>
-// eslint-disable-next-line no-unused-vars
-import { mapGetters } from 'vuex'
 import firebase from '~/plugins/firebase'
 
+import ArticlesList from '~/components/ArticlesList'
+import Form from '~/components/Form'
+
 export default {
+  components: {
+    ArticlesList,
+    Form
+  },
+
   async asyncData({ store }) {
     await store.dispatch('getArticles')
-  },
-
-  data() {
-    return {
-      title: '',
-      text: ''
-    }
-  },
-
-  computed: {
-    ...mapGetters(['articles'])
   },
 
   async mounted() {
@@ -77,24 +32,6 @@ export default {
         this.user = []
       }
     })
-  },
-
-  methods: {
-    addArticle() {
-      this.$store.dispatch('addArticle', { title: this.title, text: this.text })
-      this.resetForm()
-    },
-    deleteArticle(index) {
-      this.$store.dispatch('deleteArticle', this.articles[index].id)
-    },
-    resetForm() {
-      this.title = ''
-      this.text = ''
-    },
-    editArticle(index) {
-      this.$store.dispatch('editArticle', this.articles[index].id)
-      this.$router.push(`/articles/${this.articles[index].id}`)
-    }
   }
 }
 </script>

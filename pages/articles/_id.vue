@@ -28,7 +28,6 @@ import firebase from '@/plugins/firebase'
 
 export default {
   async asyncData({ store, params }) {
-    // eslint-disable-next-line no-unused-vars
     const article = await store.dispatch('showArticle', params.id)
     return { title: article.title, text: article.text }
   },
@@ -60,7 +59,6 @@ export default {
         title: this.title,
         text: this.text
       }
-      console.log(id)
       this.$store.dispatch('updateArticle', {
         id,
         form
