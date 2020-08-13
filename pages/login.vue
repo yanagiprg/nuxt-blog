@@ -75,8 +75,6 @@
 </template>
 
 <script>
-import firebase from '@/plugins/firebase'
-
 export default {
   data() {
     return {
@@ -90,40 +88,25 @@ export default {
     }
   },
 
-  async mounted() {
-    await firebase.auth().onAuthStateChanged((user) => {
-      this.isWaiting = false
-      this.errorMessage = ''
-      if (user) {
-        this.userId = user.uid
-        this.isLogin = true
-        this.user = user
-      } else {
-        this.isLogin = false
-        this.user = []
-      }
-    })
-  },
-
   methods: {
-    signup() {
+    async signup() {
       const form = {
         email: this.email,
         password: this.password,
         name: this.name
       }
       if (this.register) {
-        this.$store.dispatch('login/signup', form)
-        this.$store.dispatch('login/createUser', form)
+        await this.$store.dispatch('login/signup', form)
+        await this.$store.dispatch('login/createUser', form)
       } else {
-        this.$store.dispatch('login/loginWithPassword', form)
+        await this.$store.dispatch('login/loginWithPassword', form)
       }
     },
-    loginWithGoogle() {
-      this.$store.dispatch('login/loginWithGoogle')
+    async loginWithGoogle() {
+      await this.$store.dispatch('login/loginWithGoogle')
     },
-    logout() {
-      this.$store.dispatch('login/logout')
+    async logout() {
+      await this.$store.dispatch('login/logout')
     }
   }
 }

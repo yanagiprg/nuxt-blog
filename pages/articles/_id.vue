@@ -24,8 +24,6 @@
 </template>
 
 <script>
-import firebase from '@/plugins/firebase'
-
 export default {
   async asyncData({ store, params }) {
     const article = await store.dispatch('showArticle', params.id)
@@ -38,19 +36,6 @@ export default {
       title: '',
       text: ''
     }
-  },
-
-  async mounted() {
-    await firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.userId = user.uid
-        this.isLogin = true
-        this.user = user
-      } else {
-        this.isLogin = false
-        this.user = []
-      }
-    })
   },
 
   methods: {

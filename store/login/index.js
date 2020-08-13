@@ -36,26 +36,22 @@ export const mutations = {
 }
 
 export const actions = {
-  createUser({ dispatch }, user) {
-    usersRef
-      .add({})
-      .then((result) => {
-        const user = result.user
-        usersRef.doc(user.uid).set({
-          id: user.uid,
-          name: user.name,
-          email: user.email
-        })
-      })
-      .then(() => {
-        dispatch('getUsers', user)
-      })
+  async createUser({ dispatch }, user) {
+    await usersRef.add({})
+    const add = await usersRef.add({})
+    const addUser = add.user
+    await usersRef.doc(addUser.uid).set({
+      id: user.uid,
+      name: user.name,
+      email: user.email
+    })
+    dispatch('getUsers', addUser)
   },
 
-  async signup({}, { name, email, password }) {
+  async signup({}, { email, password }) {
     await firebase
       .auth()
-      .createUserWithEmailAndPassword(name, email, password)
+      .createUserWithEmailAndPassword(email, password)
       .catch(function(error) {
         const errorCode = error.code
         console.log('error : ' + errorCode)

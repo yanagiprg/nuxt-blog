@@ -1,6 +1,5 @@
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-use-before-define */
-
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
@@ -13,10 +12,11 @@ export const state = () => ({
 export const getters = {
   articles(state) {
     return state.articles
+  },
+
+  user(state) {
+    return state.user
   }
-  // article(state) {
-  //   return state.article
-  // }
 }
 
 export const mutations = {
@@ -26,24 +26,30 @@ export const mutations = {
 
   deleteArticle(state, index) {
     state.articles.splice(index, 1)
+  },
+
+  getUser(state, user) {
+    state.user = user
   }
 }
 
 export const actions = {
-  async getArticles({ commit }, user) {
-    const articles = []
-    const snapShot = await db
-      // .doc(`users/${user.uid}`)
-      .collection('articles')
-      .orderBy('updatedAt', 'desc')
-      .get()
-    snapShot.forEach((doc) => {
-      articles.push(doc.data())
-    })
-    commit('getArticles', articles)
+  async getArticles({ commit, state }) {
+    // const user = state.user
+    // const articles = []
+    // const snapShot = await db
+    //   // .collection('users')
+    //   // .doc(user.uid)
+    //   .collection('articles')
+    //   .orderBy('updatedAt', 'desc')
+    //   .get()
+    // snapShot.forEach((doc) => {
+    //   articles.push(doc.data())
+    // })
+    // commit('getArticles', articles)
   },
 
-  async addArticle({ dispatch }, article, user) {
+  async addArticle({ dispatch }, { article }) {
     const res = await db
       // .doc(`users/${user.uid}`)
       .collection('articles')
@@ -56,6 +62,7 @@ export const actions = {
         id: res.id,
         title: article.title,
         text: article.text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       })
     dispatch(
@@ -65,7 +72,7 @@ export const actions = {
     )
   },
 
-  async deleteArticle({ dispatch }, id, user) {
+  async deleteArticle({ dispatch }, id) {
     await db
       // .doc(`users/${user.uid}`)
       .collection('articles')

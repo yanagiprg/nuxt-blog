@@ -51,12 +51,13 @@ export default {
     email: ''
   }),
 
-  async mounted() {
-    await firebase.auth().onAuthStateChanged((user) => {
+  mounted() {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.userId = user.uid
         this.isLogin = true
         this.user = user
+        this.$store.commit('getUser', user)
       } else {
         this.isLogin = false
         this.user = []
