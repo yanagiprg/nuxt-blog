@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import firebase from '@/plugins/firebase'
 
 export default {
@@ -57,7 +58,7 @@ export default {
         this.userId = user.uid
         this.isLogin = true
         this.user = user
-        this.$store.commit('getUser', user)
+        this.$store.commit('getUser', _.cloneDeep(user))
       } else {
         this.isLogin = false
         this.user = []

@@ -3,10 +3,12 @@
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
+const usersRef = db.collection('users')
 
 export const state = () => ({
   articles: [],
-  user: null
+  user: null,
+  uid: ''
 })
 
 export const getters = {
@@ -35,18 +37,17 @@ export const mutations = {
 
 export const actions = {
   async getArticles({ commit, state }) {
-    // const user = state.user
-    // const articles = []
-    // const snapShot = await db
-    //   // .collection('users')
-    //   // .doc(user.uid)
-    //   .collection('articles')
-    //   .orderBy('updatedAt', 'desc')
-    //   .get()
-    // snapShot.forEach((doc) => {
-    //   articles.push(doc.data())
-    // })
-    // commit('getArticles', articles)
+    const user = state.user
+    const articles = []
+    const snapShot = await usersRef
+      .doc(user.uid)
+      .collection('articles')
+      .orderBy('updatedAt', 'desc')
+      .get()
+    snapShot.forEach((doc) => {
+      articles.push(doc.data())
+    })
+    commit('getArticles', articles)
   },
 
   async addArticle({ dispatch }, { article }) {

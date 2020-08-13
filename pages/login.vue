@@ -3,10 +3,10 @@
     <v-app>
       <v-app>
         <v-content>
-          <v-container v-if="isWaiting" class="fill-height" fluid>
+          <!-- <v-container v-if="isWaiting" class="fill-height" fluid>
             <p>読み込み中</p>
-          </v-container>
-          <v-container v-else>
+          </v-container> -->
+          <v-container>
             <v-container v-if="!isLogin">
               <v-container class="fill-height" fluid>
                 <v-row align="center" justify="center">
@@ -75,6 +75,9 @@
 </template>
 
 <script>
+// import _ from 'lodash'
+// import firebase from '@/plugins/firebase'
+
 export default {
   data() {
     return {
@@ -87,6 +90,21 @@ export default {
       errorMessage: ''
     }
   },
+
+  // mounted() {
+  //   firebase.auth().onAuthStateChanged((user) => {
+  //     this.isWaiting = false
+  //     if (user) {
+  //       this.userId = user.uid
+  //       this.isLogin = true
+  //       this.user = user
+  //       this.$store.commit('getUser', _.cloneDeep(user))
+  //     } else {
+  //       this.isLogin = false
+  //       this.user = []
+  //     }
+  //   })
+  // },
 
   methods: {
     async signup() {
@@ -101,12 +119,15 @@ export default {
       } else {
         await this.$store.dispatch('login/loginWithPassword', form)
       }
+      this.$router.push('/articles')
     },
     async loginWithGoogle() {
       await this.$store.dispatch('login/loginWithGoogle')
+      this.$router.push('/articles')
     },
     async logout() {
       await this.$store.dispatch('login/logout')
+      this.$router.push('/articles')
     }
   }
 }
