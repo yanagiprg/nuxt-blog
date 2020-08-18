@@ -15,8 +15,10 @@ export default {
     Form
   },
 
-  async asyncData({ store }) {
-    await store.dispatch('getArticles')
+  computed: {
+    getArticles: () => {
+      return this.$store.dispatch('getArticles')
+    }
   }
 }
 </script>

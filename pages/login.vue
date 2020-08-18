@@ -3,70 +3,62 @@
     <v-app>
       <v-app>
         <v-content>
-          <!-- <v-container v-if="isWaiting" class="fill-height" fluid>
-            <p>読み込み中</p>
-          </v-container> -->
-          <v-container>
-            <v-container v-if="!isLogin">
-              <v-container class="fill-height" fluid>
-                <v-row align="center" justify="center">
-                  <v-col cols="12" sm="8" md="4">
-                    <v-card class="elevation-12">
-                      <v-toolbar color="teal" dark flat>
-                        <v-toolbar-title>Login form</v-toolbar-title>
-                      </v-toolbar>
-                      <v-card-text>
-                        <v-form>
-                          <p v-if="errorMessage">{{ errorMessage }}</p>
-                          <v-text-field
-                            v-model="name"
-                            type="text"
-                            placeholder="name"
-                            prepend-icon="mdi-face"
-                          ></v-text-field>
-                          <v-text-field
-                            v-model="email"
-                            type="text"
-                            placeholder="email"
-                            prepend-icon="mdi-email"
-                          ></v-text-field>
-                          <v-text-field
-                            v-model="password"
-                            type="password"
-                            placeholder="password"
-                            prepend-icon="mdi-lock"
-                          ></v-text-field>
-                          <p>
-                            <v-checkbox
-                              v-model="register"
-                              type="checkbox"
-                              label="新規登録"
-                            ></v-checkbox>
-                          </p>
-                          <v-btn
-                            color="teal"
-                            class="mb-4 mr-4"
-                            @click="signup"
-                            >{{ register ? '新規登録' : 'ログイン' }}</v-btn
-                          >
-                          <v-btn
-                            color="teal"
-                            outlined
-                            class="mb-4"
-                            @click="loginWithGoogle"
-                            >Google</v-btn
-                          >
-                        </v-form>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-container>
+          <v-container v-if="!isLogin">
+            <v-container class="fill-height" fluid>
+              <v-row align="center" justify="center">
+                <v-col cols="12" sm="8" md="4">
+                  <v-card class="elevation-12">
+                    <v-toolbar color="teal" dark flat>
+                      <v-toolbar-title>Login form</v-toolbar-title>
+                    </v-toolbar>
+                    <v-card-text>
+                      <v-form>
+                        <p v-if="errorMessage">{{ errorMessage }}</p>
+                        <v-text-field
+                          v-model="name"
+                          type="text"
+                          placeholder="name"
+                          prepend-icon="mdi-face"
+                        ></v-text-field>
+                        <v-text-field
+                          v-model="email"
+                          type="text"
+                          placeholder="email"
+                          prepend-icon="mdi-email"
+                        ></v-text-field>
+                        <v-text-field
+                          v-model="password"
+                          type="password"
+                          placeholder="password"
+                          prepend-icon="mdi-lock"
+                        ></v-text-field>
+                        <p>
+                          <v-checkbox
+                            v-model="register"
+                            type="checkbox"
+                            label="新規登録"
+                          ></v-checkbox>
+                        </p>
+                        <v-btn color="teal" class="mb-4 mr-4" @click="signup">{{
+                          register ? '新規登録' : 'ログイン'
+                        }}</v-btn>
+                        <v-btn
+                          color="teal"
+                          outlined
+                          class="mb-4"
+                          @click="loginWithGoogle"
+                          >Google</v-btn
+                        >
+                      </v-form>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
             </v-container>
-            <v-container v-else>
-              <p>{{ user.email }}でログイン中</p>
-              <v-btn color="teal" @click="logout">ログアウト</v-btn>
-            </v-container>
+          </v-container>
+          <v-container v-else>
+            <p>{{ user.email }}でログイン中</p>
+            <v-btn color="teal" @click="logout">ログアウト</v-btn>
           </v-container>
         </v-content>
       </v-app>
@@ -75,8 +67,8 @@
 </template>
 
 <script>
-// import _ from 'lodash'
-// import firebase from '@/plugins/firebase'
+import _ from 'lodash'
+import firebase from '~/plugins/firebase'
 
 export default {
   data() {
@@ -91,20 +83,20 @@ export default {
     }
   },
 
-  // mounted() {
-  //   firebase.auth().onAuthStateChanged((user) => {
-  //     this.isWaiting = false
-  //     if (user) {
-  //       this.userId = user.uid
-  //       this.isLogin = true
-  //       this.user = user
-  //       this.$store.commit('getUser', _.cloneDeep(user))
-  //     } else {
-  //       this.isLogin = false
-  //       this.user = []
-  //     }
-  //   })
-  // },
+  beforeCreate() {
+    firebase.auth().onAuthStateChanged((user) => {
+      this.isWaiting = false
+      this.errorMessage = ''
+      if (user) {
+        this.isLogin = true
+        this.user = user
+        this.$store.commit('login/setUser', _.cloneDeep(user))
+      } else {
+        this.isLogin = false
+        this.user = []
+      }
+    })
+  },
 
   methods: {
     async signup() {
@@ -119,15 +111,13 @@ export default {
       } else {
         await this.$store.dispatch('login/loginWithPassword', form)
       }
-      this.$router.push('/articles')
     },
     async loginWithGoogle() {
       await this.$store.dispatch('login/loginWithGoogle')
-      this.$router.push('/articles')
+      await this.$router.push('/articles')
     },
     async logout() {
       await this.$store.dispatch('login/logout')
-      this.$router.push('/articles')
     }
   }
 }

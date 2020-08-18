@@ -24,14 +24,6 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
-  // generate: {
-  //   routes() {
-  //     let articles
-  //     return articles.map((article) => {
-  //       return `articles/${article.id}`
-  //     })
-  //   }
-  // },
   /*
    ** Customize the progress-bar color
    */

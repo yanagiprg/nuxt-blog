@@ -3,12 +3,10 @@
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
-const usersRef = db.collection('users')
 
 export const state = () => ({
   articles: [],
-  user: null,
-  uid: ''
+  user: null
 })
 
 export const getters = {
@@ -39,10 +37,10 @@ export const actions = {
   async getArticles({ commit, state }) {
     const user = state.user
     const articles = []
-    const snapShot = await usersRef
-      .doc(user.uid)
+    const snapShot = await db
+      .doc(`users/${user.uid}`)
       .collection('articles')
-      .orderBy('updatedAt', 'desc')
+      // .orderBy('updatedAt', 'desc')
       .get()
     snapShot.forEach((doc) => {
       articles.push(doc.data())
@@ -50,27 +48,18 @@ export const actions = {
     commit('getArticles', articles)
   },
 
-  async addArticle({ dispatch }, { article }) {
-    const res = await db
-      // .doc(`users/${user.uid}`)
-      .collection('articles')
-      .add({})
+  async addArticle({ dispatch, state }, article) {
+    const user = state.user
     await db
-      // .doc(`users/${user.uid}`)
+      .collection('users')
+      .doc(user.uid)
       .collection('articles')
-      .doc(res.id)
-      .set({
-        id: res.id,
+      .add({
         title: article.title,
-        text: article.text,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        text: article.text
       })
-    dispatch(
-      'getArticles',
-      article
-      // user
-    )
+    dispatch('getArticles', article)
+    console.log('succeed in posting')
   },
 
   async deleteArticle({ dispatch }, id) {
@@ -79,10 +68,7 @@ export const actions = {
       .collection('articles')
       .doc(id)
       .delete()
-    dispatch(
-      'getArticles'
-      // user
-    )
+    dispatch('getArticles')
   },
 
   async editArticle({}, id) {

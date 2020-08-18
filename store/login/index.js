@@ -2,7 +2,6 @@
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
-const usersRef = db.collection('users')
 
 export const state = () => ({
   userUid: '',
@@ -20,6 +19,9 @@ export const getters = {
   },
   getUsers(state) {
     return state.users
+  },
+  user(state) {
+    return state.user
   }
 }
 
@@ -32,26 +34,34 @@ export const mutations = {
   },
   setUsers(state, users) {
     state.users = users
+  },
+  setUser(state, user) {
+    state.user = user
   }
 }
 
 export const actions = {
-  async createUser({ dispatch }, user) {
-    await usersRef.add({})
-    const add = await usersRef.add({})
-    const addUser = add.user
-    await usersRef.doc(addUser.uid).set({
-      id: user.uid,
-      name: user.name,
-      email: user.email
-    })
-    dispatch('getUsers', addUser)
+  async createUser({ dispatch, state }, form) {
+    const user = state.user
+    await db
+      .collection('users')
+      .doc(user.uid)
+      .set({
+        id: user.uid,
+        name: form.name,
+        email: form.email
+      })
+    dispatch('getUsers', form)
   },
 
   async signup({}, { email, password }) {
     await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
+      .then((res) => {
+        const user = res.user
+        console.log(user)
+      })
       .catch(function(error) {
         const errorCode = error.code
         console.log('error : ' + errorCode)
@@ -73,8 +83,8 @@ export const actions = {
     firebase
       .auth()
       .signInWithPopup(provider)
-      .then(function(result) {
-        const user = result.user
+      .then((res) => {
+        const user = res.user
         console.log('success : ' + user.uid + ' : ' + user.displayName)
         commit('setUserUid', user.uid)
         commit('setUserName', user.displayName)
