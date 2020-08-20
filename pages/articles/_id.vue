@@ -4,7 +4,7 @@
       <v-container>
         <v-row>
           <v-col cols="12" md="4" required>
-            <v-text-field v-model="title" label="Title">
+            <v-text-field v-model="$v.title.$model" :counter="8" label="Title">
               {{ title }}
             </v-text-field>
           </v-col>
@@ -14,7 +14,12 @@
             </v-text-field>
           </v-col>
         </v-row>
-        <v-btn class="mr-4" small outlined @click="updateArticle(id)"
+        <v-btn
+          class="mr-4"
+          small
+          outlined
+          :disabled="$v.$invalid"
+          @click="updateArticle(id)"
           >update</v-btn
         >
         <v-btn small outlined @click="resetForm(article)">reset</v-btn>
@@ -24,6 +29,9 @@
 </template>
 
 <script>
+import { required, maxLength } from 'vuelidate/lib/validators'
+import { validateTitle } from '~/utils/validations'
+
 export default {
   async asyncData({ store, params }) {
     const article = await store.dispatch('showArticle', params.id)
@@ -35,6 +43,12 @@ export default {
       id: this.$route.params.id,
       title: '',
       text: ''
+    }
+  },
+
+  computed: {
+    titleErrors() {
+      return validateTitle(this.$v.title)
     }
   },
 
@@ -53,6 +67,13 @@ export default {
 
     resetForm() {
       window.location.reload()
+    }
+  },
+
+  validations: {
+    title: {
+      required,
+      maxLength: maxLength(8)
     }
   }
 }

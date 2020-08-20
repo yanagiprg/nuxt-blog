@@ -13,21 +13,22 @@
                     </v-toolbar>
                     <v-card-text>
                       <v-form>
-                        <p v-if="errorMessage">{{ errorMessage }}</p>
+                        <!-- <p v-if="errorMessage">{{ errorMessage }}</p> -->
                         <v-text-field
-                          v-model="name"
+                          v-model="$v.name.$model"
+                          :counter="16"
                           type="text"
                           placeholder="name"
                           prepend-icon="mdi-face"
                         ></v-text-field>
                         <v-text-field
-                          v-model="email"
+                          v-model="$v.email.$model"
                           type="text"
                           placeholder="email"
                           prepend-icon="mdi-email"
                         ></v-text-field>
                         <v-text-field
-                          v-model="password"
+                          v-model="$v.password.$model"
                           type="password"
                           placeholder="password"
                           prepend-icon="mdi-lock"
@@ -39,9 +40,13 @@
                             label="新規登録"
                           ></v-checkbox>
                         </p>
-                        <v-btn color="teal" class="mb-4 mr-4" @click="signup">{{
-                          register ? '新規登録' : 'ログイン'
-                        }}</v-btn>
+                        <v-btn
+                          color="teal"
+                          class="mb-4 mr-4"
+                          :disabled="$v.$invalid"
+                          @click="signup"
+                          >{{ register ? '新規登録' : 'ログイン' }}</v-btn
+                        >
                         <v-btn
                           color="teal"
                           outlined
@@ -68,7 +73,13 @@
 
 <script>
 import _ from 'lodash'
+import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 import firebase from '~/plugins/firebase'
+import {
+  validateName,
+  validateEmail,
+  validatePassword
+} from '~/utils/validations'
 
 export default {
   data() {
@@ -80,6 +91,18 @@ export default {
       email: '',
       password: '',
       errorMessage: ''
+    }
+  },
+
+  computed: {
+    nameErrors() {
+      return validateName(this.$v.name)
+    },
+    emailErrors() {
+      return validateEmail(this.$v.email)
+    },
+    passwordErros() {
+      return validatePassword(this.$v.password)
     }
   },
 
@@ -118,6 +141,21 @@ export default {
     },
     async logout() {
       await this.$store.dispatch('login/logout')
+    }
+  },
+
+  validations: {
+    name: {
+      required,
+      maxLength: maxLength(16)
+    },
+    email: {
+      required,
+      email
+    },
+    password: {
+      required,
+      minLength: minLength(6)
     }
   }
 }

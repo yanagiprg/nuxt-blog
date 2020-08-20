@@ -6,8 +6,10 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import ArticlesList from '~/components/ArticlesList'
 import Form from '~/components/Form'
+import firebase from '~/plugins/firebase'
 
 export default {
   components: {
@@ -16,9 +18,23 @@ export default {
   },
 
   computed: {
-    getArticles: () => {
-      console.log('computed/article')
-      return this.$store.dispatch('getArticles')
+    getArticles: async () => {
+      await firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user)
+          this.isLogin = true
+          this.user = user
+          this.email = user.email
+          console.log('beforeCreate/articles.vue')
+          this.$store.commit('getUser', _.cloneDeep(user))
+        } else {
+          this.isLogin = false
+          this.user = []
+          this.$router.push('/login')
+        }
+      })
+      console.log('computed/getArticles')
+      await this.$store.dispatch('getArticles')
     }
   }
 }
