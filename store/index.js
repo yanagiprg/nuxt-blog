@@ -3,10 +3,12 @@
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
+const timestamp = firebase.firestore.FieldValue.serverTimestamp()
 
 export const state = () => ({
   articles: [],
-  user: null
+  user: null,
+  isLogin: false
 })
 
 export const getters = {
@@ -30,6 +32,12 @@ export const mutations = {
 
   getUser(state, user) {
     state.user = user
+  },
+
+  setLogin(state, isLogin) {
+    if (isLogin === false) {
+      return (state.isLogin = true)
+    }
   }
 }
 
@@ -40,7 +48,7 @@ export const actions = {
     const snapShot = await db
       .doc(`users/${user.uid}`)
       .collection('articles')
-      // .orderBy('updatedAt', 'desc')
+      .orderBy('updatedAt', 'desc')
       .get()
     snapShot.forEach((doc) => {
       articles.push(doc.data())
@@ -50,30 +58,38 @@ export const actions = {
 
   async addArticle({ dispatch, state }, article) {
     const user = state.user
+    const userRef = db
+      .collection('users')
+      .doc(user.uid)
+      .collection('articles')
+    const res = userRef.doc()
+    await res.set({
+      id: res.id,
+      title: article.title,
+      text: article.text,
+      createdAt: timestamp,
+      updatedAt: timestamp
+    })
+    dispatch('getArticles', article)
+  },
+
+  async deleteArticle({ dispatch, state }, id) {
+    const user = state.user
     await db
       .collection('users')
       .doc(user.uid)
       .collection('articles')
-      .add({
-        title: article.title,
-        text: article.text
-      })
-    dispatch('getArticles', article)
-    console.log('succeed in posting')
-  },
-
-  async deleteArticle({ dispatch }, id) {
-    await db
-      // .doc(`users/${user.uid}`)
-      .collection('articles')
       .doc(id)
       .delete()
     dispatch('getArticles')
+    console.log('succeed in deleting')
   },
 
-  async editArticle({}, id) {
+  async editArticle({ state }, id) {
+    const user = state.user
     const snapShot = await db
-      // .doc(`users/${user.uid}`)
+      .collection('users')
+      .doc(user.uid)
       .collection('articles')
       .doc(id)
       .get()
@@ -83,9 +99,11 @@ export const actions = {
     this.state.articles[articleIndex] = snapShot.data()
   },
 
-  async showArticle({}, id) {
+  async showArticle({ state }, id) {
+    const user = state.user
     const snapShot = await db
-      // .doc(`users/${user.uid}`)
+      .collection('users')
+      .doc(user.uid)
       .collection('articles')
       .doc(id)
       .get()
@@ -93,12 +111,17 @@ export const actions = {
     return article
   },
 
-  async updateArticle({ dispatch }, { id, form }) {
-    const articleRef = await db.collection('articles').doc(id)
+  async updateArticle({ dispatch, state }, { id, form }) {
+    const user = state.user
+    const articleRef = await db
+      .collection('users')
+      .doc(user.uid)
+      .collection('articles')
+      .doc(id)
     await articleRef.update({
       title: form.title,
       text: form.text,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      updatedAt: timestamp
     })
     dispatch('getArticles', form)
   }

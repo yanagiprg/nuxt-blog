@@ -1,17 +1,17 @@
 <template>
   <v-container fluid>
-    <v-row class="">
+    <v-row>
       <v-col
         v-for="(article, index) in articles"
         :key="index"
         cols="4"
         md="3"
         xl="2"
-        @click="editArticle(index)"
       >
         <v-card class="article-card mx-auto teal" max-height="300px">
           <v-card-title class="pb-0 pt-1">{{ article.title }}</v-card-title>
           <v-card-text>{{ article.text }}</v-card-text>
+          <v-btn outlined @click="editArticle(index)">Edit</v-btn>
           <v-btn outlined @click="deleteArticle(index)">Delete</v-btn>
         </v-card>
       </v-col>
@@ -31,6 +31,9 @@ export default {
   },
 
   computed: {
+    log: () => {
+      console.log('computed/ArticlesList.vue')
+    },
     ...mapGetters(['articles'])
   },
 

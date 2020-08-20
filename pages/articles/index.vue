@@ -17,6 +17,7 @@ export default {
 
   computed: {
     getArticles: () => {
+      console.log('computed/article')
       return this.$store.dispatch('getArticles')
     }
   }

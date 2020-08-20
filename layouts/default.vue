@@ -46,17 +46,37 @@ import _ from 'lodash'
 import firebase from '~/plugins/firebase'
 
 export default {
-  data: () => ({
-    drawer: null,
-    isLogin: false,
-    email: ''
-  }),
+  // async asyncData({ store, state }) {
+  //   console.log('asyncData.1')
+  //   await firebase.auth().onAuthStateChanged((user) => {
+  //     console.log('asyncData.2')
+  //     if (user) {
+  //       console.log(user.isLogin)
+  //       store.commit('setLogin', user.isLogin)
+  //       // state.user = user
+  //       console.log('beforeCreate/default.vue')
+  //       store.commit('getUser', _.cloneDeep(user))
+  //     } else {
+  //       state.isLogin = false
+  //       state.user = []
+  //     }
+  //   })
+  // },
+
+  data() {
+    return {
+      drawer: null,
+      isLogin: false,
+      email: ''
+    }
+  },
 
   beforeCreate() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.isLogin = true
         this.user = user
+        console.log('beforeCreate/default.vue')
         this.$store.commit('getUser', _.cloneDeep(user))
       } else {
         this.isLogin = false
