@@ -13,7 +13,7 @@
                     </v-toolbar>
                     <v-card-text>
                       <v-form>
-                        <!-- <p v-if="errorMessage">{{ errorMessage }}</p> -->
+                        <p v-if="errorMessage">{{ errorMessage }}</p>
                         <v-text-field
                           v-model="$v.name.$model"
                           :counter="16"
@@ -47,13 +47,13 @@
                           @click="signup"
                           >{{ register ? '新規登録' : 'ログイン' }}</v-btn
                         >
-                        <v-btn
+                        <!-- <v-btn
                           color="teal"
                           outlined
                           class="mb-4"
                           @click="loginWithGoogle"
                           >Google</v-btn
-                        >
+                        > -->
                       </v-form>
                     </v-card-text>
                   </v-card>
@@ -72,9 +72,13 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
-import firebase from '~/plugins/firebase'
+import {
+  required,
+  email,
+  // minLength,
+  maxLength
+} from 'vuelidate/lib/validators'
+import { mapGetters } from 'vuex'
 import {
   validateName,
   validateEmail,
@@ -86,7 +90,6 @@ export default {
     return {
       register: false,
       isWaiting: true,
-      isLogin: false,
       name: '',
       email: '',
       password: '',
@@ -95,6 +98,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      user: 'login/user',
+      isLogin: 'login/isLogin'
+    }),
     nameErrors() {
       return validateName(this.$v.name)
     },
@@ -106,44 +113,30 @@ export default {
     }
   },
 
-  beforeCreate() {
-    firebase.auth().onAuthStateChanged((user) => {
-      this.isWaiting = false
-      this.errorMessage = ''
-      if (user) {
-        this.isLogin = true
-        this.user = user
-        this.$store.commit('login/setUser', _.cloneDeep(user))
-      } else {
-        this.isLogin = false
-        this.user = []
-      }
-    })
-  },
-
   methods: {
     async signup() {
       const form = {
-        email: this.email,
-        password: this.password,
-        name: this.name
+        email: this.$v.email.$model,
+        password: this.$v.password.$model,
+        name: this.$v.name.$model
       }
       if (this.register) {
+        console.log(form)
         await this.$store.dispatch('login/signup', form)
         await this.$store.dispatch('login/createUser', form)
+        this.$router.push('/articles')
       } else {
         await this.$store.dispatch('login/loginWithPassword', form)
       }
     },
-    async loginWithGoogle() {
-      await this.$store.dispatch('login/loginWithGoogle')
-      await this.$router.push('/articles')
-    },
     async logout() {
       await this.$store.dispatch('login/logout')
     }
+    // async loginWithGoogle() {
+    //   await this.$store.dispatch('login/loginWithGoogle')
+    //   await this.$router.push('/articles')
+    // },
   },
-
   validations: {
     name: {
       required,
@@ -155,7 +148,13 @@ export default {
     },
     password: {
       required,
-      minLength: minLength(6)
+      strongPassword(password) {
+        return (
+          /[a-z]/.test(password) && // checks for a-z
+          /[0-9]/.test(password) && // checks for 0-9
+          password.length >= 8
+        )
+      }
     }
   }
 }

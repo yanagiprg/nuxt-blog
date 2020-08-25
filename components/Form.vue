@@ -9,7 +9,7 @@
         ></v-text-field>
       </v-col>
       <v-col cols="12" md="4">
-        <v-text-field v-model="text" label="Text"></v-text-field>
+        <v-text-field v-model="$v.text.$model" label="Text"></v-text-field>
       </v-col>
     </v-row>
     <v-btn
@@ -26,7 +26,7 @@
 
 <script>
 import { required, maxLength } from 'vuelidate/lib/validators'
-import { validateTitle } from '~/utils/validations'
+import { validateTitle, validateText } from '~/utils/validations'
 
 export default {
   data() {
@@ -39,6 +39,9 @@ export default {
   computed: {
     titleErrors() {
       return validateTitle(this.$v.title)
+    },
+    validateText() {
+      return validateText(this.$v.text)
     }
   },
 
@@ -56,6 +59,9 @@ export default {
     title: {
       required,
       maxLength: maxLength(8)
+    },
+    text: {
+      required
     }
   }
 }

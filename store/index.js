@@ -7,8 +7,7 @@ const timestamp = firebase.firestore.FieldValue.serverTimestamp()
 
 export const state = () => ({
   articles: [],
-  user: null,
-  isLogin: false
+  user: null
 })
 
 export const getters = {
@@ -22,7 +21,7 @@ export const getters = {
 }
 
 export const mutations = {
-  getArticles(state, articles) {
+  setArticles(state, articles) {
     state.articles = articles
   },
 
@@ -30,14 +29,8 @@ export const mutations = {
     state.articles.splice(index, 1)
   },
 
-  getUser(state, user) {
+  setUser(state, user) {
     state.user = user
-  },
-
-  setLogin(state, isLogin) {
-    if (isLogin === false) {
-      return (state.isLogin = true)
-    }
   }
 }
 
@@ -53,7 +46,7 @@ export const actions = {
     snapShot.forEach((doc) => {
       articles.push(doc.data())
     })
-    commit('getArticles', articles)
+    commit('setArticles', articles)
   },
 
   async addArticle({ dispatch, state }, article) {

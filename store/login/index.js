@@ -1,4 +1,5 @@
 /* eslint-disable no-empty-pattern */
+import _ from 'lodash'
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
@@ -7,7 +8,8 @@ export const state = () => ({
   userUid: '',
   userName: '',
   users: [],
-  user: null
+  user: {},
+  isLogin: false
 })
 
 export const getters = {
@@ -22,6 +24,9 @@ export const getters = {
   },
   user(state) {
     return state.user
+  },
+  isLogin(state) {
+    return state.isLogin
   }
 }
 
@@ -33,15 +38,18 @@ export const mutations = {
     state.userName = userName
   },
   setUsers(state, users) {
-    state.users = users
+    state.users.push(users)
   },
   setUser(state, user) {
     state.user = user
+  },
+  setIsLogin(state, isLogin) {
+    state.isLogin = isLogin
   }
 }
 
 export const actions = {
-  async createUser({ dispatch, state }, form) {
+  async createUser({ state, commit }, form) {
     const user = state.user
     await db
       .collection('users')
@@ -51,15 +59,16 @@ export const actions = {
         name: form.name,
         email: form.email
       })
-    dispatch('getUsers', form)
+    commit('setUsers', form)
   },
 
-  async signup({}, { email, password }) {
+  async signup({ commit }, { email, password }) {
     await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((res) => {
         const user = res.user
+        commit('setUser', _.cloneDeep(user))
         console.log(user)
       })
       .catch(function(error) {
@@ -78,25 +87,26 @@ export const actions = {
       })
   },
 
-  loginWithGoogle({ commit }) {
-    const provider = new firebase.auth.GoogleAuthProvider()
-    firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then((res) => {
-        const user = res.user
-        console.log('success : ' + user.uid + ' : ' + user.displayName)
-        commit('setUserUid', user.uid)
-        commit('setUserName', user.displayName)
-      })
-      .catch(function(error) {
-        const errorCode = error.code
-        console.log('error : ' + errorCode)
-      })
-  },
+  // loginWithGoogle({ commit }) {
+  //   const provider = new firebase.auth.GoogleAuthProvider()
+  //   firebase
+  //     .auth()
+  //     .signInWithPopup(provider)
+  //     .then((res) => {
+  //       const user = res.user
+  //       console.log('success : ' + user.uid + ' : ' + user.displayName)
+  //       commit('setUserUid', user.uid)
+  //       commit('setUserName', user.displayName)
+  //     })
+  //     .catch(function(error) {
+  //       const errorCode = error.code
+  //       console.log('error : ' + errorCode)
+  //     })
+  // },
 
-  logout() {
+  logout({ commit }) {
     firebase.auth().signOut()
+    commit('setUser', null)
     console.log('succeed in logout')
   }
 }

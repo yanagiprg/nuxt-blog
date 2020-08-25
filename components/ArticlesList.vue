@@ -31,9 +31,6 @@ export default {
   },
 
   computed: {
-    log: () => {
-      console.log('computed/ArticlesList.vue')
-    },
     ...mapGetters(['articles'])
   },
 

@@ -18,7 +18,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Nuxt Blog</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-title>{{ email }}</v-toolbar-title>
+      <v-toolbar-title>{{ user ? user.email : null }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="!isLogin" to="/login" nuxt small outlined color="white"
         >Login</v-btn
@@ -45,29 +45,37 @@
 
 <script>
 import _ from 'lodash'
+import { mapGetters } from 'vuex'
 import firebase from '~/plugins/firebase'
 
 export default {
   data() {
     return {
       drawer: null,
-      isLogin: false,
       email: ''
     }
   },
 
-  beforeCreate() {
+  computed: {
+    ...mapGetters({
+      user: 'login/user',
+      isLogin: 'login/isLogin'
+    })
+  },
+
+  mounted() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         console.log(user)
-        this.isLogin = true
-        this.user = user
-        this.email = user.email
-        // console.log('beforeCreate/default.vue')
-        this.$store.commit('getUser', _.cloneDeep(user))
+        console.log('mounted/default.vue')
+        this.$store.commit('login/setUser', _.cloneDeep(user))
+        this.$store.commit('setUser', _.cloneDeep(user))
+        this.$store.commit('login/setIsLogin', true)
+        this.$store.dispatch('getArticles')
       } else {
-        this.isLogin = false
-        this.user = []
+        this.$store.commit('setUser', null)
+        this.$store.commit('login/setIsLogin', false)
+        this.$store.commit('setArticles', null)
         this.$router.push('/login')
       }
     })
@@ -76,6 +84,7 @@ export default {
   methods: {
     logout() {
       this.$store.dispatch('login/logout')
+      this.$store.commit('login/setIsLogin', false)
     }
   }
 }

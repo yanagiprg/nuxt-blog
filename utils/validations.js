@@ -6,6 +6,13 @@ export const validateTitle = (validate) => {
   return errors
 }
 
+export const validateText = (validate) => {
+  const errors = []
+  if (!validate.$dirty) return errors
+  !validate.required && errors.push('テキストを入力してください')
+  return errors
+}
+
 export const validateName = (validate) => {
   const errors = []
   if (!validate.$dirty) return errors
@@ -26,6 +33,7 @@ export const validatePassword = (validate) => {
   const errors = []
   if (!validate.$dirty) return errors
   !validate.required && errors.push('パスワードを入力してください')
-  !validate.minLength && errors.push('６文字以上で入力してください')
+  !validate.minLength &&
+    errors.push('8文字以上で英数字を混ぜて入力してください')
   return errors
 }
