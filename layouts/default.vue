@@ -18,7 +18,11 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Nuxt Blog</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-title>{{ user ? user.email : null }}</v-toolbar-title>
+      <v-toolbar-title>
+        <nuxt-link to="/users" class="text-link">
+          {{ user ? user.email : null }}
+        </nuxt-link>
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="!isLogin" to="/login" nuxt small outlined color="white"
         >Login</v-btn
@@ -52,7 +56,8 @@ export default {
   data() {
     return {
       drawer: null,
-      email: ''
+      email: '',
+      users: []
     }
   },
 
@@ -66,12 +71,11 @@ export default {
   mounted() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log(user)
-        console.log('mounted/default.vue')
         this.$store.commit('login/setUser', _.cloneDeep(user))
         this.$store.commit('setUser', _.cloneDeep(user))
         this.$store.commit('login/setIsLogin', true)
         this.$store.dispatch('getArticles')
+        this.$store.dispatch('login/getUsers')
       } else {
         this.$store.commit('setUser', null)
         this.$store.commit('login/setIsLogin', false)

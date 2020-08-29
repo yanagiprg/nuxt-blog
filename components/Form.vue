@@ -2,6 +2,10 @@
   <v-form ref="form">
     <v-row>
       <v-col cols="12" md="4" required>
+        <span v-if="!$v.title.required">タイトルが入力されていません。</span>
+        <span v-else-if="!$v.title.maxLength"
+          >タイトルは8文字以内で入力してください。</span
+        >
         <v-text-field
           v-model="$v.title.$model"
           :counter="8"
@@ -9,6 +13,7 @@
         ></v-text-field>
       </v-col>
       <v-col cols="12" md="4">
+        <span v-if="!$v.text.required">テキストが入力されていません。</span>
         <v-text-field v-model="$v.text.$model" label="Text"></v-text-field>
       </v-col>
     </v-row>

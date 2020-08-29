@@ -14,6 +14,12 @@
                     <v-card-text>
                       <v-form>
                         <p v-if="errorMessage">{{ errorMessage }}</p>
+                        <span v-if="!$v.name.required"
+                          >名前が入力されていません。</span
+                        >
+                        <span v-else-if="!$v.name.maxLength"
+                          >名前が16文字以内で入力してください。</span
+                        >
                         <v-text-field
                           v-model="$v.name.$model"
                           :counter="16"
@@ -21,12 +27,24 @@
                           placeholder="name"
                           prepend-icon="mdi-face"
                         ></v-text-field>
+                        <span v-if="!$v.email.required"
+                          >メールアドレスが入力されていません。</span
+                        >
+                        <span v-if="!$v.email.email"
+                          >不正なメールアドレスです。</span
+                        >
                         <v-text-field
                           v-model="$v.email.$model"
                           type="text"
                           placeholder="email"
                           prepend-icon="mdi-email"
                         ></v-text-field>
+                        <span v-if="!$v.password.required"
+                          >パスワードが入力されていません。</span
+                        >
+                        <span v-if="!$v.password.strongPassword"
+                          >パスワードは英数字混合で8文字以上で入力てください。</span
+                        >
                         <v-text-field
                           v-model="$v.password.$model"
                           type="password"

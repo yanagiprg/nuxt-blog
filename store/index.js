@@ -35,11 +35,9 @@ export const mutations = {
 }
 
 export const actions = {
-  async getArticles({ commit, state }) {
-    const user = state.user
+  async getArticles({ commit }) {
     const articles = []
     const snapShot = await db
-      .doc(`users/${user.uid}`)
       .collection('articles')
       .orderBy('updatedAt', 'desc')
       .get()
@@ -51,26 +49,25 @@ export const actions = {
 
   async addArticle({ dispatch, state }, article) {
     const user = state.user
-    const userRef = db
-      .collection('users')
-      .doc(user.uid)
+    const userRef = db.collection('users').doc(user.uid)
+    const res = await db.collection('articles').add({})
+    await db
       .collection('articles')
-    const res = userRef.doc()
-    await res.set({
-      id: res.id,
-      title: article.title,
-      text: article.text,
-      createdAt: timestamp,
-      updatedAt: timestamp
-    })
+      .doc(res.id)
+      .set({
+        id: res.id,
+        title: article.title,
+        text: article.text,
+        user_id: user.uid,
+        usersRef: userRef,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      })
     dispatch('getArticles', article)
   },
 
-  async deleteArticle({ dispatch, state }, id) {
-    const user = state.user
+  async deleteArticle({ dispatch }, id) {
     await db
-      .collection('users')
-      .doc(user.uid)
       .collection('articles')
       .doc(id)
       .delete()
@@ -78,11 +75,8 @@ export const actions = {
     console.log('succeed in deleting')
   },
 
-  async editArticle({ state }, id) {
-    const user = state.user
+  async editArticle({}, id) {
     const snapShot = await db
-      .collection('users')
-      .doc(user.uid)
       .collection('articles')
       .doc(id)
       .get()
@@ -92,11 +86,8 @@ export const actions = {
     this.state.articles[articleIndex] = snapShot.data()
   },
 
-  async showArticle({ state }, id) {
-    const user = state.user
+  async showArticle({}, id) {
     const snapShot = await db
-      .collection('users')
-      .doc(user.uid)
       .collection('articles')
       .doc(id)
       .get()
@@ -104,13 +95,8 @@ export const actions = {
     return article
   },
 
-  async updateArticle({ dispatch, state }, { id, form }) {
-    const user = state.user
-    const articleRef = await db
-      .collection('users')
-      .doc(user.uid)
-      .collection('articles')
-      .doc(id)
+  async updateArticle({ dispatch }, { id, form }) {
+    const articleRef = await db.collection('articles').doc(id)
     await articleRef.update({
       title: form.title,
       text: form.text,

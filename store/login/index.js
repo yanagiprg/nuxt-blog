@@ -5,21 +5,13 @@ import firebase from '~/plugins/firebase'
 const db = firebase.firestore()
 
 export const state = () => ({
-  userUid: '',
-  userName: '',
   users: [],
   user: {},
   isLogin: false
 })
 
 export const getters = {
-  getUserUid(state) {
-    return state.userUid
-  },
-  getUserName(state) {
-    return state.userName
-  },
-  getUsers(state) {
+  users(state) {
     return state.users
   },
   user(state) {
@@ -31,14 +23,8 @@ export const getters = {
 }
 
 export const mutations = {
-  setUserUid(state, userUid) {
-    state.userUid = userUid
-  },
-  setUserName(state, userName) {
-    state.userName = userName
-  },
   setUsers(state, users) {
-    state.users.push(users)
+    state.users = users
   },
   setUser(state, user) {
     state.user = user
@@ -57,7 +43,8 @@ export const actions = {
       .set({
         id: user.uid,
         name: form.name,
-        email: form.email
+        email: form.email,
+        password: form.password
       })
     commit('setUsers', form)
   },
@@ -69,7 +56,6 @@ export const actions = {
       .then((res) => {
         const user = res.user
         commit('setUser', _.cloneDeep(user))
-        console.log(user)
       })
       .catch(function(error) {
         const errorCode = error.code
@@ -87,26 +73,73 @@ export const actions = {
       })
   },
 
-  // loginWithGoogle({ commit }) {
-  //   const provider = new firebase.auth.GoogleAuthProvider()
-  //   firebase
-  //     .auth()
-  //     .signInWithPopup(provider)
-  //     .then((res) => {
-  //       const user = res.user
-  //       console.log('success : ' + user.uid + ' : ' + user.displayName)
-  //       commit('setUserUid', user.uid)
-  //       commit('setUserName', user.displayName)
-  //     })
-  //     .catch(function(error) {
-  //       const errorCode = error.code
-  //       console.log('error : ' + errorCode)
-  //     })
-  // },
-
   logout({ commit }) {
     firebase.auth().signOut()
     commit('setUser', null)
     console.log('succeed in logout')
+  },
+
+  async getUsers({ state, commit }) {
+    const user = state.user
+    const users = []
+    let snapShot = await db
+      .collection('users')
+      .doc(user.uid)
+      .get()
+    const userData = await snapShot.data()
+    if (userData.admin_id) {
+      snapShot = await db.collection('users').get()
+      snapShot.forEach((doc) => {
+        users.push(doc.data())
+      })
+    } else {
+      users.push(userData)
+    }
+    commit('setUsers', users)
+  },
+
+  async deleteUser({ dispatch }, id) {
+    await db
+      .collection('users')
+      .doc(id)
+      .delete()
+    dispatch('getUsers')
+  },
+
+  async editUser({}, id) {
+    const snapShot = await db
+      .collection('users')
+      .doc(id)
+      .get()
+    const userIndex = this.state.users.findIndex(
+      (user) => user.id === snapShot.id
+    )
+    this.state.users[userIndex] = snapShot.data()
+  },
+
+  async showUser({}, id) {
+    const snapShot = await db
+      .collection('users')
+      .doc(id)
+      .get()
+    const userData = await snapShot.data()
+    return userData
+  },
+
+  async updateUser({ dispatch }, { id, form }) {
+    const userRef = await db.collection('users').doc(id)
+    await userRef.update({
+      name: form.name,
+      email: form.email,
+      password: form.password
+    })
+    dispatch('getUsers', form)
+  },
+
+  async getAdmin({ state }) {
+    const user = state.user
+    const snapShot = await db.collection('users').doc(user.uid)
+    const userData = await snapShot.data()
+    return userData.admin_id ? 'exist' : ''
   }
 }
