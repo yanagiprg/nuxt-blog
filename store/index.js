@@ -1,3 +1,4 @@
+/* eslint-disable object-shorthand */
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-use-before-define */
 import firebase from '~/plugins/firebase'
@@ -7,6 +8,7 @@ const timestamp = firebase.firestore.FieldValue.serverTimestamp()
 
 export const state = () => ({
   articles: [],
+  comments: [],
   user: null
 })
 
@@ -17,6 +19,10 @@ export const getters = {
 
   user(state) {
     return state.user
+  },
+
+  comments(state) {
+    return state.comments
   }
 }
 
@@ -31,6 +37,14 @@ export const mutations = {
 
   setUser(state, user) {
     state.user = user
+  },
+
+  setComments(state, comments) {
+    state.comments = comments
+  },
+
+  deleteComment(state, index) {
+    state.comments.splice(index, 1)
   }
 }
 
@@ -75,7 +89,7 @@ export const actions = {
     console.log('succeed in deleting')
   },
 
-  async editArticle({}, id) {
+  async showArticle({}, id) {
     const snapShot = await db
       .collection('articles')
       .doc(id)
@@ -86,7 +100,7 @@ export const actions = {
     this.state.articles[articleIndex] = snapShot.data()
   },
 
-  async showArticle({}, id) {
+  async editArticle({}, id) {
     const snapShot = await db
       .collection('articles')
       .doc(id)
@@ -103,5 +117,48 @@ export const actions = {
       updatedAt: timestamp
     })
     dispatch('getArticles', form)
+  },
+
+  async getComments({ commit, state }, id) {
+    console.log(id)
+    const user = state.user
+    const comments = []
+    const snapShot = await db
+      .collection('users')
+      .doc(user.uid)
+      .collection('articles')
+      .doc(id)
+      .collection('comments')
+      .get()
+    snapShot.forEach((doc) => {
+      comments.push(doc.data())
+    })
+    commit('setComments', comments)
+  },
+
+  async addComment({ dispatch, state }, comment) {
+    const user = state.user
+    const userRef = db.collection('users').doc(user.uid)
+    const articleRef = userRef.collection('articles').doc(comment.id)
+    const res = await db.collection('comments').add({})
+    await db
+      .collection('comments')
+      .doc(res.id)
+      .set({
+        id: res.id,
+        commentText: comment.commentText,
+        user_id: user.uid,
+        articlesRef: articleRef,
+        createdAt: timestamp
+      })
+    dispatch('getComments', comment)
+  },
+
+  async deleteComment({ dispatch }, id) {
+    await db
+      .collection('comments')
+      .doc(id)
+      .delete()
+    dispatch('getComments')
   }
 }
