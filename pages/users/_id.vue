@@ -75,12 +75,12 @@ import {
 
 export default {
   async asyncData({ store, params }) {
-    const user = await store.dispatch('login/showUser', params.id)
+    const userData = await store.dispatch('login/showUser', params.id)
     return {
-      name: user.name,
-      email: user.email,
-      password: user.password,
-      admin_id: user.admin_id
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+      admin_id: userData.admin_id
     }
   },
 
