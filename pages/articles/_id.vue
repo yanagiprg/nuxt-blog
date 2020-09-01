@@ -28,52 +28,52 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <v-btn
+          <div
             v-if="
               user.uid === user_id ||
                 user.uid === 'Gf7pkyrQetPZCVK7cKh6BrSEeSq1'
             "
-            class="mr-4"
-            small
-            outlined
-            @click="deleteArticle(index)"
-            >Delete</v-btn
           >
-          <v-btn
-            class="mr-4"
-            small
-            outlined
-            :disabled="$v.$invalid"
-            @click="updateArticle(id)"
-            >update</v-btn
-          >
-          <v-btn small outlined @click="resetForm(article)">reset</v-btn>
+            <v-btn class="mr-4" small outlined @click="deleteArticle(id)"
+              >削除</v-btn
+            >
+            <v-btn
+              class="mr-4"
+              small
+              outlined
+              :disabled="$v.$invalid"
+              @click="updateArticle(id)"
+              >更新</v-btn
+            >
+            <v-btn small outlined @click="resetForm(article)">リセット</v-btn>
+          </div>
         </v-container>
       </v-form>
       <v-form>
         <v-container>
           <v-row>
-            <v-col
-              v-for="(comment, index) in comments"
-              :key="index"
-              cols="12"
-              md="12"
-              xl="3"
-            >
-              <v-card
-                v-if="comment"
-                class="article-card mx-auto teal"
-                max-height="300px"
-              >
+            <v-col v-for="(comment, index) in comments" :key="index" cols="12">
+              <v-card class="article-card mx-auto teal" max-height="300px">
                 <v-card-title class="pb-0 pt-1">
-                  <!-- {{ comment.commentText }} -->
+                  {{ comment.commentText }}
                 </v-card-title>
-                <v-btn outlined small class="mr-4" @click="updateComment(index)"
-                  >Update</v-btn
+                <div
+                  v-if="
+                    user.uid === comment.user_id ||
+                      user.uid === 'Gf7pkyrQetPZCVK7cKh6BrSEeSq1'
+                  "
                 >
-                <v-btn outlined small @click="deleteComment(index)"
-                  >Delete</v-btn
-                >
+                  <v-btn
+                    outlined
+                    small
+                    class="mr-4"
+                    @click="updateComment(index)"
+                    >更新</v-btn
+                  >
+                  <v-btn outlined small @click="deleteComment(index)"
+                    >削除</v-btn
+                  >
+                </div>
               </v-card>
             </v-col>
             <v-row class="flex" justify="space-between">
@@ -97,11 +97,11 @@ import { validateTitle, validateText } from '~/utils/validations'
 
 export default {
   async asyncData({ store, params }) {
-    const article = await store.dispatch('editArticle', params.id)
+    const articleData = await store.dispatch('editArticle', params.id)
     return {
-      title: article.title,
-      text: article.text,
-      user_id: article.user_id
+      title: articleData.title,
+      text: articleData.text,
+      user_id: articleData.user_id
     }
   },
 
@@ -128,10 +128,14 @@ export default {
   },
 
   mounted() {
-    this.$store.commit('getComments', this.$route.params.id)
+    this.$store.dispatch('getComments', this.$route.params.id)
   },
 
   methods: {
+    deleteArticle(id) {
+      this.$store.dispatch('deleteArticle', id)
+    },
+
     updateArticle(id) {
       const form = {
         title: this.title,
@@ -153,11 +157,18 @@ export default {
         id: this.$route.params.id,
         commentText: this.commentText
       })
-      // this.resetForm()
+      this.resetForm()
     },
 
     deleteComment(index) {
       this.$store.dispatch('deleteComment', this.comments[index].id)
+    },
+
+    updateComment(index) {
+      this.$store.dispatch('updateComment', {
+        id: this.comments[index].id,
+        commentText: this.commentText
+      })
     }
   },
 

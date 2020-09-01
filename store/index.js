@@ -45,6 +45,10 @@ export const mutations = {
 
   deleteComment(state, index) {
     state.comments.splice(index, 1)
+  },
+
+  setShowComment(state, form) {
+    state.articles[form.articleIndex] = form.snapShot
   }
 }
 
@@ -89,7 +93,7 @@ export const actions = {
     console.log('succeed in deleting')
   },
 
-  async showArticle({}, id) {
+  async showArticle({ commit }, id) {
     const snapShot = await db
       .collection('articles')
       .doc(id)
@@ -97,7 +101,8 @@ export const actions = {
     const articleIndex = this.state.articles.findIndex(
       (article) => article.id === snapShot.id
     )
-    this.state.articles[articleIndex] = snapShot.data()
+    const form = { articleIndex, snapShot: snapShot.data() }
+    commit('setShowArticles', form)
   },
 
   async editArticle({}, id) {
@@ -119,16 +124,12 @@ export const actions = {
     dispatch('getArticles', form)
   },
 
-  async getComments({ commit, state }, id) {
-    console.log(id)
-    const user = state.user
+  async getComments({ commit }, id) {
+    console.log(id, 'getComments')
     const comments = []
     const snapShot = await db
-      .collection('users')
-      .doc(user.uid)
-      .collection('articles')
-      .doc(id)
       .collection('comments')
+      .where('article_id', '==', id)
       .get()
     snapShot.forEach((doc) => {
       comments.push(doc.data())
@@ -146,10 +147,12 @@ export const actions = {
       .doc(res.id)
       .set({
         id: res.id,
-        commentText: comment.commentText,
         user_id: user.uid,
+        article_id: comment.id,
+        commentText: comment.commentText,
         articlesRef: articleRef,
-        createdAt: timestamp
+        createdAt: timestamp,
+        updatedAt: timestamp
       })
     dispatch('getComments', comment)
   },
@@ -160,5 +163,14 @@ export const actions = {
       .doc(id)
       .delete()
     dispatch('getComments')
+  },
+
+  async updateComment({ dispatch }, { id, comment }) {
+    const commentRef = db.collection('comments').doc(id)
+    await commentRef.update({
+      commentText: comment.commentText,
+      updatedAt: timestamp
+    })
+    dispatch('getComments', comment)
   }
 }

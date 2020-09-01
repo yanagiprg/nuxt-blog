@@ -23,9 +23,9 @@
       outlined
       :disabled="$v.$invalid"
       @click="addArticle()"
-      >submit</v-btn
+      >投稿</v-btn
     >
-    <v-btn small outlined @click="resetForm()">reset</v-btn>
+    <v-btn small outlined @click="resetForm()">リセット</v-btn>
   </v-form>
 </template>
 

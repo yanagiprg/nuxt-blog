@@ -37,9 +37,6 @@ export default {
   },
 
   methods: {
-    deleteArticle(index) {
-      this.$store.dispatch('deleteArticle', this.articles[index].id)
-    },
     showArticle(index) {
       this.$store.dispatch('showArticle', this.articles[index].id)
       this.$router.push(`/articles/${this.articles[index].id}`)

@@ -75,7 +75,7 @@ import {
 
 export default {
   async asyncData({ store, params }) {
-    const userData = await store.dispatch('login/showUser', params.id)
+    const userData = await store.dispatch('login/editUser', params.id)
     return {
       name: userData.name,
       email: userData.email,

@@ -26,11 +26,17 @@ export const mutations = {
   setUsers(state, users) {
     state.users = users
   },
+
   setUser(state, user) {
     state.user = user
   },
+
   setIsLogin(state, isLogin) {
     state.isLogin = isLogin
+  },
+
+  setShowComment(state, form) {
+    state.users[form.userIndex] = form.snapShot
   }
 }
 
@@ -106,7 +112,7 @@ export const actions = {
     dispatch('getUsers')
   },
 
-  async editUser({}, id) {
+  async showUser({ commit }, id) {
     const snapShot = await db
       .collection('users')
       .doc(id)
@@ -114,10 +120,11 @@ export const actions = {
     const userIndex = this.state.users.findIndex(
       (user) => user.id === snapShot.id
     )
-    this.state.users[userIndex] = snapShot.data()
+    const form = { userIndex, snapShot: snapShot.data() }
+    commit('setShowUsers', form)
   },
 
-  async showUser({}, id) {
+  async editUser({}, id) {
     const snapShot = await db
       .collection('users')
       .doc(id)
