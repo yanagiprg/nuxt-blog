@@ -141,12 +141,5 @@ export const actions = {
       password: form.password
     })
     dispatch('getUsers', form)
-  },
-
-  async getAdmin({ state }) {
-    const user = state.user
-    const snapShot = await db.collection('users').doc(user.uid)
-    const userData = await snapShot.data()
-    return userData.admin_id ? 'exist' : ''
   }
 }
