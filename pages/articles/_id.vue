@@ -148,27 +148,32 @@ export default {
       this.$router.push('/articles')
     },
 
-    resetForm() {
-      window.location.reload()
-    },
-
-    addComment() {
-      this.$store.dispatch('addComment', {
+    async addComment() {
+      const form = {
         id: this.$route.params.id,
         commentText: this.commentText
-      })
-      this.resetForm()
+      }
+      await this.$store.dispatch('addComment', form)
+      // console.log('addComment', form.commentText)
+      await this.resetForm()
     },
 
-    deleteComment(index) {
-      this.$store.dispatch('deleteComment', this.comments[index].id)
+    async deleteComment(index) {
+      await this.$store.dispatch('deleteComment', this.comments[index].id)
+      await this.resetForm()
     },
 
-    updateComment(index) {
-      this.$store.dispatch('updateComment', {
+    async updateComment(index) {
+      const form = {
         id: this.comments[index].id,
         commentText: this.commentText
-      })
+      }
+      await this.$store.dispatch('updateComment', form)
+      await this.resetForm()
+    },
+
+    resetForm() {
+      window.location.reload()
     }
   },
 

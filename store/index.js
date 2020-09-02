@@ -1,6 +1,7 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-use-before-define */
+import _ from 'lodash'
 import firebase from '~/plugins/firebase'
 
 const db = firebase.firestore()
@@ -28,11 +29,15 @@ export const getters = {
 
 export const mutations = {
   setArticles(state, articles) {
-    state.articles = articles
+    state.articles = _.cloneDeep(articles)
   },
 
   deleteArticle(state, index) {
     state.articles.splice(index, 1)
+  },
+
+  setShowArticle(state, form) {
+    state.articles[form.articleIndex] = form.snapShot
   },
 
   setUser(state, user) {
@@ -40,7 +45,7 @@ export const mutations = {
   },
 
   setComments(state, comments) {
-    state.comments = comments
+    state.comments = _.cloneDeep(comments)
   },
 
   deleteComment(state, index) {
@@ -48,7 +53,7 @@ export const mutations = {
   },
 
   setShowComment(state, form) {
-    state.articles[form.articleIndex] = form.snapShot
+    state.comments[form.commentIndex] = form.snapShot
   }
 }
 
@@ -102,7 +107,7 @@ export const actions = {
       (article) => article.id === snapShot.id
     )
     const form = { articleIndex, snapShot: snapShot.data() }
-    commit('setShowArticles', form)
+    commit('setShowArticle', form)
   },
 
   async editArticle({}, id) {
@@ -125,7 +130,7 @@ export const actions = {
   },
 
   async getComments({ commit }, id) {
-    console.log(id, 'getComments')
+    console.log('getComments')
     const comments = []
     const snapShot = await db
       .collection('comments')
@@ -138,10 +143,12 @@ export const actions = {
   },
 
   async addComment({ dispatch, state }, comment) {
+    console.log(comment.commentText, 1)
     const user = state.user
     const userRef = db.collection('users').doc(user.uid)
     const articleRef = userRef.collection('articles').doc(comment.id)
     const res = await db.collection('comments').add({})
+    console.log(comment.commentText, 2)
     await db
       .collection('comments')
       .doc(res.id)
@@ -154,23 +161,30 @@ export const actions = {
         createdAt: timestamp,
         updatedAt: timestamp
       })
+    console.log(comment.commentText, 3)
     dispatch('getComments', comment)
   },
 
-  async deleteComment({ dispatch }, id) {
+  async deleteComment({ dispatch, commit }, id) {
     await db
       .collection('comments')
       .doc(id)
       .delete()
-    dispatch('getComments')
+    // const comments = []
+    // const snapShot = await db.collection('comments').get()
+    // snapShot.forEach((doc) => {
+    //   comments.push(doc.data())
+    // })
+    // commit('setComments', comments)
+    dispatch('getComments', id)
   },
 
-  async updateComment({ dispatch }, { id, comment }) {
-    const commentRef = db.collection('comments').doc(id)
+  async updateComment({ dispatch }, comment) {
+    const commentRef = db.collection('comments').doc(comment.id)
     await commentRef.update({
       commentText: comment.commentText,
       updatedAt: timestamp
     })
-    dispatch('getComments', comment)
+    dispatch('getComments', comment.id)
   }
 }

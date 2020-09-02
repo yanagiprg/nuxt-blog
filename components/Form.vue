@@ -45,6 +45,7 @@ export default {
     titleErrors() {
       return validateTitle(this.$v.title)
     },
+
     validateText() {
       return validateText(this.$v.text)
     }
@@ -55,6 +56,7 @@ export default {
       this.$store.dispatch('addArticle', { title: this.title, text: this.text })
       this.resetForm()
     },
+
     resetForm() {
       this.$refs.form.reset()
     }
@@ -65,6 +67,7 @@ export default {
       required,
       maxLength: maxLength(8)
     },
+
     text: {
       required
     }
