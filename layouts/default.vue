@@ -31,8 +31,11 @@
         >Logout</v-btn
       >
     </v-app-bar>
-    <v-content>
-      <v-container fluid>
+    <v-content class="mx-auto">
+      <v-container v-if="isLoading === true" class="mx-auto">
+        <Loading />
+      </v-container>
+      <v-container v-else fluid>
         <nuxt />
       </v-container>
     </v-content>
@@ -51,8 +54,13 @@
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
 import firebase from '~/plugins/firebase'
+import Loading from '~/components/Loading'
 
 export default {
+  components: {
+    Loading
+  },
+
   data() {
     return {
       drawer: null,
@@ -64,18 +72,21 @@ export default {
   computed: {
     ...mapGetters({
       user: 'login/user',
-      isLogin: 'login/isLogin'
+      isLogin: 'login/isLogin',
+      isLoading: 'isLoading'
     })
   },
 
-  mounted() {
-    firebase.auth().onAuthStateChanged((user) => {
+  async mounted() {
+    await this.$store.commit('setIsLoading', true)
+    await firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$store.commit('login/setUser', _.cloneDeep(user))
         this.$store.commit('setUser', _.cloneDeep(user))
         this.$store.commit('login/setIsLogin', true)
         this.$store.dispatch('getArticles')
         this.$store.dispatch('login/getUsers')
+        this.$store.commit('setIsLoading', false)
       } else {
         this.$store.commit('setUser', null)
         this.$store.commit('login/setIsLogin', false)

@@ -10,7 +10,8 @@ const timestamp = firebase.firestore.FieldValue.serverTimestamp()
 export const state = () => ({
   articles: [],
   comments: [],
-  user: null
+  user: null,
+  isLoading: false
 })
 
 export const getters = {
@@ -24,6 +25,10 @@ export const getters = {
 
   comments(state) {
     return state.comments
+  },
+
+  isLoading(state) {
+    return state.isLoading
   }
 }
 
@@ -54,6 +59,10 @@ export const mutations = {
 
   setShowComment(state, form) {
     state.comments[form.commentIndex] = form.snapShot
+  },
+
+  setIsLoading(state, isLoading) {
+    state.isLoading = isLoading
   }
 }
 
