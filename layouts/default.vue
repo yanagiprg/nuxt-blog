@@ -20,7 +20,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-title>
         <nuxt-link to="/users" class="text-link">
-          {{ user ? user.email : null }}
+          {{ user ? user.displayName : null }}
         </nuxt-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>

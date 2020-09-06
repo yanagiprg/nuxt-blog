@@ -42,7 +42,7 @@ export const mutations = {
 
 export const actions = {
   async createUser({ state, commit }, form) {
-    const user = state.user
+    const user = _.cloneDeep(state.user)
     await db
       .collection('users')
       .doc(user.uid)
@@ -52,7 +52,10 @@ export const actions = {
         email: form.email,
         password: form.password
       })
-    commit('setUsers', form)
+    user.updateProfile({
+      displayName: form.name
+    })
+    commit('setUsers', _.cloneDeep(form))
   },
 
   async signup({ commit }, { email, password }) {
@@ -112,18 +115,6 @@ export const actions = {
     dispatch('getUsers')
   },
 
-  async showUser({ commit }, id) {
-    const snapShot = await db
-      .collection('users')
-      .doc(id)
-      .get()
-    const userIndex = this.state.users.findIndex(
-      (user) => user.id === snapShot.id
-    )
-    const form = { userIndex, snapShot: snapShot.data() }
-    commit('setShowUsers', form)
-  },
-
   async editUser({}, id) {
     const snapShot = await db
       .collection('users')
@@ -141,5 +132,40 @@ export const actions = {
       password: form.password
     })
     dispatch('getUsers', form)
+  },
+
+  async updateUserName({ commit }, form) {
+    const user = firebase.auth().currentUser
+    await user
+      .updateProfile({
+        displayName: form.name
+      })
+      .then(() => {
+        console.log(user)
+        console.log('success change name')
+      })
+    commit('setUser', _.cloneDeep(user))
+  },
+
+  async updateUserEmailAndPassword({ commit }, { form, user }) {
+    const email = form.email
+    const password = form.password
+    console.log(email, password)
+    const credential = firebase.auth.EmailAuthProvider.credential(
+      email,
+      password
+    )
+    const authUser = await firebase
+      .auth()
+      .currentUser.reauthenticateAndRetrieveDataWithCredential(credential)
+    await authUser.updateEmail(email).then(() => {
+      console.log(user)
+      console.log('success change email')
+    })
+    await authUser.updatePassword(form.password).then(() => {
+      console.log(authUser)
+      console.log('success change password')
+    })
+    commit('setUser', _.cloneDeep(authUser))
   }
 }

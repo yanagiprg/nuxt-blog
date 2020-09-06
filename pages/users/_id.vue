@@ -15,29 +15,25 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <p v-if="errorMessage">{{ errorMessage }}</p>
                   <v-text-field
                     v-model="$v.name.$model"
                     :counter="16"
                     type="text"
                     placeholder="name"
                     prepend-icon="mdi-face"
-                    >{{ name }}</v-text-field
-                  >
-                  <v-text-field
+                  ></v-text-field>
+                  <!-- <v-text-field
                     v-model="$v.email.$model"
                     type="text"
                     placeholder="email"
                     prepend-icon="mdi-email"
-                    >{{ email }}</v-text-field
-                  >
+                  ></v-text-field>
                   <v-text-field
                     v-model="$v.password.$model"
                     type="password"
                     placeholder="password"
                     prepend-icon="mdi-lock"
-                    >{{ password }}</v-text-field
-                  >
+                  ></v-text-field> -->
                   <v-btn
                     v-if="!admin_id"
                     color="teal"
@@ -51,7 +47,7 @@
                     color="light-blue darken-4"
                     class="mb-4 mr-4"
                     :disabled="$v.$invalid"
-                    @click="updateUser"
+                    @click="updateUser(id)"
                     >更新</v-btn
                   >
                 </v-form>
@@ -86,8 +82,7 @@ export default {
 
   data() {
     return {
-      id: this.$route.params.id,
-      errorMessage: ''
+      id: this.$route.params.id
     }
   },
 
@@ -96,12 +91,15 @@ export default {
       user: 'login/user',
       isLogin: 'login/isLogin'
     }),
+
     nameErrors() {
       return validateName(this.$v.name)
     },
+
     emailErrors() {
       return validateEmail(this.$v.email)
     },
+
     passwordErros() {
       return validatePassword(this.$v.password)
     }
@@ -109,12 +107,16 @@ export default {
 
   methods: {
     updateUser(id) {
+      console.log(this.user)
+      const user = this.user
       const form = {
-        mame: this.name,
+        name: this.name,
         email: this.email,
         password: this.password
       }
       this.$store.dispatch('login/updateUser', { id, form })
+      this.$store.dispatch('login/updateUserName', { form, user })
+      // this.$store.dispatch('login/updateUserEmailAndPassword', { form, user })
       this.$router.push('/users')
     },
 

@@ -98,18 +98,6 @@ export const actions = {
     console.log('succeed in deleting')
   },
 
-  async showArticle({ commit }, id) {
-    const snapShot = await db
-      .collection('articles')
-      .doc(id)
-      .get()
-    const articleIndex = this.state.articles.findIndex(
-      (article) => article.id === snapShot.id
-    )
-    const form = { articleIndex, snapShot: snapShot.data() }
-    commit('setShowArticle', form)
-  },
-
   async editArticle({}, id) {
     const snapShot = await db
       .collection('articles')
@@ -165,26 +153,30 @@ export const actions = {
     dispatch('getComments', comment)
   },
 
-  async deleteComment({ dispatch, commit }, id) {
+  async deleteComment({ dispatch }, id) {
     await db
       .collection('comments')
       .doc(id)
       .delete()
-    // const comments = []
-    // const snapShot = await db.collection('comments').get()
-    // snapShot.forEach((doc) => {
-    //   comments.push(doc.data())
-    // })
-    // commit('setComments', comments)
-    dispatch('getComments', id)
+    dispatch('getComments')
+    console.log('succeed in deleting')
   },
 
-  async updateComment({ dispatch }, comment) {
-    const commentRef = db.collection('comments').doc(comment.id)
+  async editComment({}, id) {
+    const snapShot = await db
+      .collection('comments')
+      .doc(id)
+      .get()
+    const comment = await snapShot.data()
+    return comment
+  },
+
+  async updateComment({ dispatch }, { id, form }) {
+    const commentRef = db.collection('comments').doc(id)
     await commentRef.update({
-      commentText: comment.commentText,
+      commentText: form.commentText,
       updatedAt: timestamp
     })
-    dispatch('getComments', comment.id)
+    dispatch('getComments', form)
   }
 }

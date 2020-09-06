@@ -34,8 +34,8 @@ export default {
     deleteUser(index) {
       this.$store.dispatch('login/deleteUser', this.users[index].id)
     },
+
     showUser(index) {
-      this.$store.dispatch('login/showUsers', this.users[index].id)
       this.$router.push(`/users/${this.users[index].id}`)
     }
   }

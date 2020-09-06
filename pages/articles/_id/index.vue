@@ -16,7 +16,6 @@
                 :counter="8"
                 label="Title"
               >
-                {{ title }}
               </v-text-field>
             </v-col>
             <v-col cols="12" md="4">
@@ -24,19 +23,15 @@
                 >テキストが入力されていません。</span
               >
               <v-text-field v-model="$v.text.$model" label="Text">
-                {{ text }}
               </v-text-field>
             </v-col>
           </v-row>
           <div
             v-if="
               user.uid === user_id ||
-                user.uid === 'Gf7pkyrQetPZCVK7cKh6BrSEeSq1'
+                user.uid === '7MI0Wp14EBUT6PeOK5WpO5aaBL32'
             "
           >
-            <v-btn class="mr-4" small outlined @click="deleteArticle(id)"
-              >削除</v-btn
-            >
             <v-btn
               class="mr-4"
               small
@@ -45,44 +40,43 @@
               @click="updateArticle(id)"
               >更新</v-btn
             >
+            <v-btn class="mr-4" small outlined @click="deleteArticle(id)"
+              >削除</v-btn
+            >
             <v-btn small outlined @click="resetForm(article)">リセット</v-btn>
           </div>
         </v-container>
       </v-form>
       <v-form>
         <v-container>
+          <v-row class="flex" justify="space-between">
+            <v-text-field
+              v-model="commentText"
+              label="コメントを入力する"
+            ></v-text-field>
+            <v-btn @click="addComment()">追加</v-btn>
+          </v-row>
           <v-row>
             <v-col v-for="(comment, index) in comments" :key="index" cols="12">
-              <v-card class="article-card mx-auto teal" max-height="300px">
-                <v-card-title class="pb-0 pt-1">
+              <v-card class="mx-auto teal" max-height="300px">
+                <v-card-title class="pb-0 pt-1 view">
                   {{ comment.commentText }}
                 </v-card-title>
                 <div
                   v-if="
                     user.uid === comment.user_id ||
-                      user.uid === 'Gf7pkyrQetPZCVK7cKh6BrSEeSq1'
+                      user.uid === '7MI0Wp14EBUT6PeOK5WpO5aaBL32'
                   "
                 >
-                  <v-btn
-                    outlined
-                    small
-                    class="mr-4"
-                    @click="updateComment(index)"
-                    >更新</v-btn
-                  >
-                  <v-btn outlined small @click="deleteComment(index)"
+                  <v-btn outlined small @click="showComment(index)">
+                    編集
+                  </v-btn>
+                  <v-btn outlined small @click="deleteComment(comment)"
                     >削除</v-btn
                   >
                 </div>
               </v-card>
             </v-col>
-            <v-row class="flex" justify="space-between">
-              <v-text-field
-                v-model="commentText"
-                label="コメントを入力する"
-              ></v-text-field>
-              <v-btn @click="addComment()">追加</v-btn>
-            </v-row>
           </v-row>
         </v-container>
       </v-form>
@@ -154,22 +148,18 @@ export default {
         commentText: this.commentText
       }
       await this.$store.dispatch('addComment', form)
-      // console.log('addComment', form.commentText)
       await this.resetForm()
     },
 
-    async deleteComment(index) {
-      await this.$store.dispatch('deleteComment', this.comments[index].id)
+    async deleteComment(comment) {
+      await this.$store.dispatch('deleteComment', comment.id)
       await this.resetForm()
     },
 
-    async updateComment(index) {
-      const form = {
-        id: this.comments[index].id,
-        commentText: this.commentText
-      }
-      await this.$store.dispatch('updateComment', form)
-      await this.resetForm()
+    showComment(index) {
+      this.$router.push(
+        `${this.$route.path}/comments/${this.comments[index].id}`
+      )
     },
 
     resetForm() {
