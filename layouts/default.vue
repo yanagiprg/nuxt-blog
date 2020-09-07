@@ -31,8 +31,8 @@
         >Logout</v-btn
       >
     </v-app-bar>
-    <v-content class="mx-auto">
-      <v-container v-if="isLoading === true" class="mx-auto">
+    <v-content>
+      <v-container v-if="isLoading === true" fluid class="mx-auto">
         <Loading />
       </v-container>
       <v-container v-else fluid>

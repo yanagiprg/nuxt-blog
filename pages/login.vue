@@ -17,7 +17,7 @@
                         <span v-if="!$v.name.required"
                           >名前が入力されていません。</span
                         >
-                        <span v-else-if="!$v.name.maxLength"
+                        <span v-if="!$v.name.maxLength"
                           >名前が16文字以内で入力してください。</span
                         >
                         <v-text-field
@@ -90,12 +90,7 @@
 </template>
 
 <script>
-import {
-  required,
-  email,
-  // minLength,
-  maxLength
-} from 'vuelidate/lib/validators'
+import { required, email, maxLength } from 'vuelidate/lib/validators'
 import { mapGetters } from 'vuex'
 import {
   validateName,

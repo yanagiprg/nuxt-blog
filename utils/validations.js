@@ -37,3 +37,12 @@ export const validatePassword = (validate) => {
     errors.push('8文字以上で英数字を混ぜて入力してください')
   return errors
 }
+
+export const validateNewPassword = (validate) => {
+  const errors = []
+  if (!validate.$dirty) return errors
+  !validate.required && errors.push('パスワードを入力してください')
+  !validate.minLength &&
+    errors.push('8文字以上で英数字を混ぜて入力してください')
+  return errors
+}

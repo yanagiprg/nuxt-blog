@@ -112,6 +112,14 @@ export const actions = {
       .collection('users')
       .doc(id)
       .delete()
+    await db
+      .collection('articles')
+      .where('user_id', '==', id)
+      .delete()
+    await db
+      .collection('comments')
+      .where('user_id', '==', id)
+      .delete()
     dispatch('getUsers')
   },
 
@@ -129,7 +137,7 @@ export const actions = {
     await userRef.update({
       name: form.name,
       email: form.email,
-      password: form.password
+      password: form.newPassword
     })
     dispatch('getUsers', form)
   },
@@ -148,24 +156,23 @@ export const actions = {
   },
 
   async updateUserEmailAndPassword({ commit }, { form, user }) {
-    const email = form.email
+    const email = user.email
     const password = form.password
     console.log(email, password)
     const credential = firebase.auth.EmailAuthProvider.credential(
       email,
       password
     )
-    const authUser = await firebase
-      .auth()
-      .currentUser.reauthenticateAndRetrieveDataWithCredential(credential)
-    await authUser.updateEmail(email).then(() => {
+    const authUser = firebase.auth().currentUser
+    await authUser.reauthenticateAndRetrieveDataWithCredential(credential)
+    await authUser.updateEmail(form.email).then(() => {
       console.log(user)
       console.log('success change email')
     })
-    await authUser.updatePassword(form.password).then(() => {
+    await authUser.updatePassword(form.newPassword).then(() => {
       console.log(authUser)
       console.log('success change password')
     })
-    commit('setUser', _.cloneDeep(authUser))
+    commit('setUser', _.cloneDeep(firebase.auth().currentUser))
   }
 }

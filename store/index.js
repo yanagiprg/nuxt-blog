@@ -103,8 +103,14 @@ export const actions = {
       .collection('articles')
       .doc(id)
       .delete()
+    // const snapShot = await db
+    //   .collection('comments')
+    //   .where('article_id', '==', id)
+    //   .get()
+    // snapShot.forEach((doc) => {
+    //   console.log(doc.data()) // 個別のオブジェクトが表示される
+    // })
     dispatch('getArticles')
-    console.log('succeed in deleting')
   },
 
   async editArticle({}, id) {
