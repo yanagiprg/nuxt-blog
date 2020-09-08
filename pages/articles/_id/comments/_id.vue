@@ -6,7 +6,7 @@
         <v-btn outlined small class="mr-4" @click="updateComment(id)"
           >更新</v-btn
         >
-        <v-btn outlined small @click="resetForm">キャンセル</v-btn>
+        <v-btn outlined small @click="resetForm">リセット</v-btn>
       </v-col>
     </v-row>
   </v-app>
@@ -23,8 +23,8 @@ export default {
 
   data() {
     return {
-      id: this.$route.params.id,
-      commentText: ''
+      id: this.$route.params.id
+      // commentText: ''
     }
   },
 
@@ -32,7 +32,7 @@ export default {
     updateComment(id) {
       const form = { commentText: this.commentText }
       this.$store.dispatch('updateComment', { id, form })
-      // this.$router.push('/articles')
+      this.$router.push('/articles')
     },
 
     resetForm() {

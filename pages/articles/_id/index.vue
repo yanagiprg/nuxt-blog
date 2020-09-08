@@ -26,12 +26,7 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <div
-            v-if="
-              user.uid === user_id ||
-                user.uid === '7MI0Wp14EBUT6PeOK5WpO5aaBL32'
-            "
-          >
+          <div v-if="user.uid === user_id || adminUser.admin_id">
             <v-btn
               class="mr-4"
               small
@@ -62,12 +57,7 @@
                 <v-card-title class="pb-0 pt-1 view">
                   {{ comment.commentText }}
                 </v-card-title>
-                <div
-                  v-if="
-                    user.uid === comment.user_id ||
-                      user.uid === '7MI0Wp14EBUT6PeOK5WpO5aaBL32'
-                  "
-                >
+                <div v-if="user.uid === comment.user_id || adminUser.admin_id">
                   <v-btn outlined small @click="showComment(index)">
                     編集
                   </v-btn>
@@ -102,15 +92,17 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
-      commentText: ''
+      commentText: '',
+      admin_id: ''
     }
   },
 
   computed: {
     ...mapGetters({
+      adminUser: 'login/adminUser',
+      user: 'login/user',
       articles: 'articles',
-      comments: 'comments',
-      user: 'login/user'
+      comments: 'comments'
     }),
 
     titleErrors() {
@@ -126,8 +118,12 @@ export default {
   },
 
   methods: {
+    getUser() {
+      this.$store.dispatch('login/getUser')
+    },
     deleteArticle(id) {
       this.$store.dispatch('deleteArticle', id)
+      this.$router.push('/articles')
     },
 
     updateArticle(id) {
@@ -139,7 +135,6 @@ export default {
         id,
         form
       })
-      this.$router.push('/articles')
     },
 
     async addComment() {

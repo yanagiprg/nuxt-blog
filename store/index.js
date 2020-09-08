@@ -57,10 +57,6 @@ export const mutations = {
     state.comments.splice(index, 1)
   },
 
-  setShowComment(state, form) {
-    state.comments[form.commentIndex] = form.snapShot
-  },
-
   setIsLoading(state, isLoading) {
     state.isLoading = isLoading
   }
@@ -103,13 +99,15 @@ export const actions = {
       .collection('articles')
       .doc(id)
       .delete()
-    // const snapShot = await db
-    //   .collection('comments')
-    //   .where('article_id', '==', id)
-    //   .get()
-    // snapShot.forEach((doc) => {
-    //   console.log(doc.data()) // 個別のオブジェクトが表示される
-    // })
+    const snapShot = await db
+      .collection('comments')
+      .where('article_id', '==', id)
+      .get()
+    snapShot.forEach((doc) => {
+      db.collection('comments')
+        .doc(doc.id)
+        .delete()
+    })
     dispatch('getArticles')
   },
 
@@ -133,7 +131,6 @@ export const actions = {
   },
 
   async getComments({ commit }, id) {
-    console.log('getComments')
     const comments = []
     const snapShot = await db
       .collection('comments')
@@ -146,12 +143,10 @@ export const actions = {
   },
 
   async addComment({ dispatch, state }, comment) {
-    console.log(comment.commentText, 1)
     const user = state.user
     const userRef = db.collection('users').doc(user.uid)
     const articleRef = userRef.collection('articles').doc(comment.id)
     const res = await db.collection('comments').add({})
-    console.log(comment.commentText, 2)
     await db
       .collection('comments')
       .doc(res.id)
@@ -164,16 +159,14 @@ export const actions = {
         createdAt: timestamp,
         updatedAt: timestamp
       })
-    console.log(comment.commentText, 3)
     dispatch('getComments', comment)
   },
 
-  async deleteComment({ dispatch }, id) {
+  async deleteComment({}, id) {
     await db
       .collection('comments')
       .doc(id)
       .delete()
-    dispatch('getComments')
     console.log('succeed in deleting')
   },
 
@@ -193,5 +186,6 @@ export const actions = {
       updatedAt: timestamp
     })
     dispatch('getComments', form)
+    console.log('succeed in updating')
   }
 }

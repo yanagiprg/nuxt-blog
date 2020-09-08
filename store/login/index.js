@@ -7,7 +7,8 @@ const db = firebase.firestore()
 export const state = () => ({
   users: [],
   user: {},
-  isLogin: false
+  isLogin: false,
+  adminUser: {}
 })
 
 export const getters = {
@@ -19,6 +20,9 @@ export const getters = {
   },
   isLogin(state) {
     return state.isLogin
+  },
+  adminUser(state) {
+    return state.adminUser
   }
 }
 
@@ -35,8 +39,8 @@ export const mutations = {
     state.isLogin = isLogin
   },
 
-  setShowComment(state, form) {
-    state.users[form.userIndex] = form.snapShot
+  setAdminUser(state, adminUser) {
+    state.adminUser = adminUser
   }
 }
 
@@ -107,19 +111,53 @@ export const actions = {
     commit('setUsers', users)
   },
 
-  async deleteUser({ dispatch }, id) {
+  // async getUser({ state }) {
+  //   const user = await firebase.auth().currentUser
+  //   const snapShot = await db
+  //     .collection('users')
+  //     .doc(user.uid)
+  //     .get()
+  //   const userData = await snapShot.data()
+  //   await console.log(userData)
+  //   return userData
+  // },
+
+  async getAdminUser({ state, commit }) {
+    const user = state.user
+    const snapShot = await db
+      .collection('users')
+      .doc(user.uid)
+      .get()
+    const adminUser = await snapShot.data()
+    console.log(adminUser.admin_id)
+    commit('setAdminUser', _.cloneDeep(adminUser))
+  },
+
+  async deleteUser({ dispatch, state }, id) {
+    const user = _.cloneDeep(state.user)
     await db
       .collection('users')
       .doc(id)
       .delete()
-    await db
+    const articleRef = await db
       .collection('articles')
       .where('user_id', '==', id)
-      .delete()
-    await db
+      .get()
+    articleRef.forEach((doc) => {
+      db.collection('articles')
+        .doc(doc.id)
+        .delete()
+    })
+    const commentRef = await db
       .collection('comments')
       .where('user_id', '==', id)
-      .delete()
+      .get()
+    commentRef.forEach((doc) => {
+      db.collection('comments')
+        .doc(doc.id)
+        .delete()
+    })
+    await user.delete()
     dispatch('getUsers')
   },
 

@@ -31,14 +31,14 @@
         >Logout</v-btn
       >
     </v-app-bar>
-    <v-content>
-      <v-container v-if="isLoading === true" fluid class="mx-auto">
+    <v-main>
+      <v-container v-if="isLoading === true" fluid>
         <Loading />
       </v-container>
       <v-container v-else fluid>
         <nuxt />
       </v-container>
-    </v-content>
+    </v-main>
     <v-footer color="teal" app>
       <a
         class="white--text"
@@ -86,12 +86,14 @@ export default {
         this.$store.commit('login/setIsLogin', true)
         this.$store.dispatch('getArticles')
         this.$store.dispatch('login/getUsers')
+        this.$store.dispatch('login/getAdminUser')
         this.$store.commit('setIsLoading', false)
       } else {
         this.$store.commit('setUser', null)
         this.$store.commit('login/setIsLogin', false)
         this.$store.commit('setArticles', null)
         this.$router.push('/login')
+        this.$store.commit('setIsLoading', false)
       }
     })
   },
