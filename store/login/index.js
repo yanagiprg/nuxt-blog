@@ -15,12 +15,15 @@ export const getters = {
   users(state) {
     return state.users
   },
+
   user(state) {
     return state.user
   },
+
   isLogin(state) {
     return state.isLogin
   },
+
   adminUser(state) {
     return state.adminUser
   }
@@ -111,17 +114,6 @@ export const actions = {
     commit('setUsers', users)
   },
 
-  // async getUser({ state }) {
-  //   const user = await firebase.auth().currentUser
-  //   const snapShot = await db
-  //     .collection('users')
-  //     .doc(user.uid)
-  //     .get()
-  //   const userData = await snapShot.data()
-  //   await console.log(userData)
-  //   return userData
-  // },
-
   async getAdminUser({ state, commit }) {
     const user = state.user
     const snapShot = await db
@@ -129,7 +121,6 @@ export const actions = {
       .doc(user.uid)
       .get()
     const adminUser = await snapShot.data()
-    console.log(adminUser.admin_id)
     commit('setAdminUser', _.cloneDeep(adminUser))
   },
 

@@ -9,7 +9,7 @@
                 <v-col cols="12" sm="8" md="4">
                   <v-card class="elevation-12">
                     <v-toolbar color="teal" dark flat>
-                      <v-toolbar-title>Login form</v-toolbar-title>
+                      <v-toolbar-title>ログインフォーム</v-toolbar-title>
                     </v-toolbar>
                     <v-card-text>
                       <v-form>
@@ -65,13 +65,6 @@
                           @click="signup"
                           >{{ register ? '新規登録' : 'ログイン' }}</v-btn
                         >
-                        <!-- <v-btn
-                          color="teal"
-                          outlined
-                          class="mb-4"
-                          @click="loginWithGoogle"
-                          >Google</v-btn
-                        > -->
                       </v-form>
                     </v-card-text>
                   </v-card>
@@ -128,27 +121,23 @@ export default {
 
   methods: {
     async signup() {
-      const form = {
+      const payload = {
         email: this.$v.email.$model,
         password: this.$v.password.$model,
         name: this.$v.name.$model
       }
       if (this.register) {
-        console.log(form)
-        await this.$store.dispatch('login/signup', form)
-        await this.$store.dispatch('login/createUser', form)
+        await this.$store.dispatch('login/signup', payload)
+        await this.$store.dispatch('login/createUser', payload)
         this.$router.push('/articles')
       } else {
-        await this.$store.dispatch('login/loginWithPassword', form)
+        await this.$store.dispatch('login/loginWithPassword', payload)
+        this.$router.push('/articles')
       }
     },
     async logout() {
       await this.$store.dispatch('login/logout')
     }
-    // async loginWithGoogle() {
-    //   await this.$store.dispatch('login/loginWithGoogle')
-    //   await this.$router.push('/articles')
-    // },
   },
   validations: {
     name: {

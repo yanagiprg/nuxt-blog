@@ -143,17 +143,21 @@ export default {
 
   methods: {
     updateUser(id) {
-      console.log(this.user)
-      const user = this.user
-      const form = {
+      const payload = {
         name: this.name,
         email: this.email,
         password: this.password,
         newPassword: this.newPassword
       }
-      this.$store.dispatch('login/updateUser', { id, form })
-      this.$store.dispatch('login/updateUserName', { form, user })
-      this.$store.dispatch('login/updateUserEmailAndPassword', { form, user })
+      this.$store.dispatch('login/updateUser', { id, payload })
+      this.$store.dispatch('login/updateUserName', {
+        payload,
+        user: this.user
+      })
+      this.$store.dispatch('login/updateUserEmailAndPassword', {
+        payload,
+        user: this.user
+      })
       this.$router.push('/users')
     },
 

@@ -24,15 +24,14 @@ export default {
   data() {
     return {
       id: this.$route.params.id
-      // commentText: ''
     }
   },
 
   methods: {
-    updateComment(id) {
-      const form = { commentText: this.commentText }
-      this.$store.dispatch('updateComment', { id, form })
-      this.$router.push('/articles')
+    async updateComment(id) {
+      const payload = { commentText: this.commentText }
+      await this.$store.dispatch('updateComment', { id, payload })
+      await this.$router.push(`/articles/${this.$route.params.articleId}`)
     },
 
     resetForm() {

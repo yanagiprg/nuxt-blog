@@ -81,7 +81,7 @@ import { validateTitle, validateText } from '~/utils/validations'
 
 export default {
   async asyncData({ store, params }) {
-    const articleData = await store.dispatch('editArticle', params.id)
+    const articleData = await store.dispatch('editArticle', params.articleId)
     return {
       title: articleData.title,
       text: articleData.text,
@@ -91,7 +91,7 @@ export default {
 
   data() {
     return {
-      id: this.$route.params.id,
+      id: this.$route.params.articleId,
       commentText: '',
       admin_id: ''
     }
@@ -114,41 +114,41 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('getComments', this.$route.params.id)
+    this.$store.dispatch('getComments', this.$route.params.articleId)
   },
 
   methods: {
-    getUser() {
-      this.$store.dispatch('login/getUser')
-    },
     deleteArticle(id) {
       this.$store.dispatch('deleteArticle', id)
       this.$router.push('/articles')
     },
 
-    updateArticle(id) {
-      const form = {
+    async updateArticle(id) {
+      const payload = {
         title: this.title,
         text: this.text
       }
       this.$store.dispatch('updateArticle', {
         id,
-        form
+        payload
       })
+      await this.$router.push('/articles')
     },
 
     async addComment() {
-      const form = {
-        id: this.$route.params.id,
+      const payload = {
+        id: this.$route.params.articleId,
         commentText: this.commentText
       }
-      await this.$store.dispatch('addComment', form)
-      await this.resetForm()
+      await this.$store.dispatch('addComment', payload)
     },
 
     async deleteComment(comment) {
-      await this.$store.dispatch('deleteComment', comment.id)
-      await this.resetForm()
+      const payload = {
+        id: this.$route.params.articleId,
+        commentId: comment.id
+      }
+      await this.$store.dispatch('deleteComment', payload)
     },
 
     showComment(index) {

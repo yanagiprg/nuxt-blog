@@ -1,11 +1,8 @@
 <template>
   <v-app>
-    <div v-if="user">
+    <div>
       <Form />
       <ArticlesList />
-    </div>
-    <div v-else>
-      <nuxt-link to="/login" class="text-link">ログインしてください</nuxt-link>
     </div>
   </v-app>
 </template>

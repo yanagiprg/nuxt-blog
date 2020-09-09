@@ -1,4 +1,3 @@
-/* eslint-disable object-shorthand */
 /* eslint-disable no-empty-pattern */
 /* eslint-disable no-use-before-define */
 import _ from 'lodash'
@@ -10,8 +9,7 @@ const timestamp = firebase.firestore.FieldValue.serverTimestamp()
 export const state = () => ({
   articles: [],
   comments: [],
-  user: null,
-  isLoading: false
+  user: null
 })
 
 export const getters = {
@@ -25,10 +23,6 @@ export const getters = {
 
   comments(state) {
     return state.comments
-  },
-
-  isLoading(state) {
-    return state.isLoading
   }
 }
 
@@ -41,9 +35,9 @@ export const mutations = {
     state.articles.splice(index, 1)
   },
 
-  setShowArticle(state, form) {
-    state.articles[form.articleIndex] = form.snapShot
-  },
+  // setShowArticle(state, form) {
+  //   state.articles[form.articleIndex] = form.snapShot
+  // },
 
   setUser(state, user) {
     state.user = user
@@ -55,10 +49,6 @@ export const mutations = {
 
   deleteComment(state, index) {
     state.comments.splice(index, 1)
-  },
-
-  setIsLoading(state, isLoading) {
-    state.isLoading = isLoading
   }
 }
 
@@ -120,14 +110,14 @@ export const actions = {
     return article
   },
 
-  async updateArticle({ dispatch }, { id, form }) {
+  async updateArticle({ dispatch }, { id, payload }) {
     const articleRef = await db.collection('articles').doc(id)
     await articleRef.update({
-      title: form.title,
-      text: form.text,
+      title: payload.title,
+      text: payload.text,
       updatedAt: timestamp
     })
-    dispatch('getArticles', form)
+    dispatch('getArticles', payload)
   },
 
   async getComments({ commit }, id) {
@@ -142,10 +132,10 @@ export const actions = {
     commit('setComments', comments)
   },
 
-  async addComment({ dispatch, state }, comment) {
+  async addComment({ dispatch, state }, payload) {
     const user = state.user
     const userRef = db.collection('users').doc(user.uid)
-    const articleRef = userRef.collection('articles').doc(comment.id)
+    const articleRef = userRef.collection('articles').doc(payload.id)
     const res = await db.collection('comments').add({})
     await db
       .collection('comments')
@@ -153,20 +143,21 @@ export const actions = {
       .set({
         id: res.id,
         user_id: user.uid,
-        article_id: comment.id,
-        commentText: comment.commentText,
+        article_id: payload.id,
+        commentText: payload.commentText,
         articlesRef: articleRef,
         createdAt: timestamp,
         updatedAt: timestamp
       })
-    dispatch('getComments', comment)
+    dispatch('getComments', payload.id)
   },
 
-  async deleteComment({}, id) {
+  async deleteComment({ dispatch }, payload) {
     await db
       .collection('comments')
-      .doc(id)
+      .doc(payload.commentId)
       .delete()
+    dispatch('getComments', payload.id)
     console.log('succeed in deleting')
   },
 
@@ -179,13 +170,13 @@ export const actions = {
     return comment
   },
 
-  async updateComment({ dispatch }, { id, form }) {
+  async updateComment({ dispatch }, { id, payload }) {
     const commentRef = db.collection('comments').doc(id)
     await commentRef.update({
-      commentText: form.commentText,
+      commentText: payload.commentText,
       updatedAt: timestamp
     })
-    dispatch('getComments', form)
+    dispatch('getComments', payload)
     console.log('succeed in updating')
   }
 }

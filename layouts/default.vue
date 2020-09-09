@@ -18,10 +18,8 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Nuxt Blog</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-title>
-        <nuxt-link to="/users" class="text-link">
-          {{ user ? user.displayName : null }}
-        </nuxt-link>
+      <v-toolbar-title @click="showUser">
+        {{ user ? user.displayName : null }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="!isLogin" to="/login" nuxt small outlined color="white"
@@ -65,7 +63,8 @@ export default {
     return {
       drawer: null,
       email: '',
-      users: []
+      users: [],
+      isLoading: true
     }
   },
 
@@ -73,12 +72,11 @@ export default {
     ...mapGetters({
       user: 'login/user',
       isLogin: 'login/isLogin',
-      isLoading: 'isLoading'
+      adminUser: 'login/adminUser'
     })
   },
 
   async mounted() {
-    await this.$store.commit('setIsLoading', true)
     await firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$store.commit('login/setUser', _.cloneDeep(user))
@@ -87,13 +85,13 @@ export default {
         this.$store.dispatch('getArticles')
         this.$store.dispatch('login/getUsers')
         this.$store.dispatch('login/getAdminUser')
-        this.$store.commit('setIsLoading', false)
+        this.isLoading = false
       } else {
         this.$store.commit('setUser', null)
         this.$store.commit('login/setIsLogin', false)
         this.$store.commit('setArticles', null)
         this.$router.push('/login')
-        this.$store.commit('setIsLoading', false)
+        this.isLoading = false
       }
     })
   },
@@ -102,6 +100,14 @@ export default {
     logout() {
       this.$store.dispatch('login/logout')
       this.$store.commit('login/setIsLogin', false)
+    },
+
+    showUser() {
+      if (this.adminUser.admin_id) {
+        this.$router.push('/users')
+      } else {
+        this.$router.push(`/users/${this.user.uid}`)
+      }
     }
   }
 }

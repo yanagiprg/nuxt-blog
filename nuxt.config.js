@@ -6,7 +6,7 @@ export default {
       devtools: true
     }
   },
-  mode: 'universal',
+  mode: 'spa',
   /*
    ** Headers of the page
    */
