@@ -65,24 +65,24 @@ export const actions = {
     commit('setArticles', articles)
   },
 
-  async addArticle({ dispatch, state }, article) {
-    const user = state.user
-    const userRef = db.collection('users').doc(user.uid)
-    const res = await db.collection('articles').add({})
-    await db
-      .collection('articles')
-      .doc(res.id)
-      .set({
-        id: res.id,
-        title: article.title,
-        text: article.text,
-        user_id: user.uid,
-        usersRef: userRef,
-        createdAt: timestamp,
-        updatedAt: timestamp
-      })
-    dispatch('getArticles', article)
-  },
+  // async addArticle({ dispatch, state }, article) {
+  //   const user = state.user
+  //   const userRef = db.collection('users').doc(user.uid)
+  //   const res = await db.collection('articles').add({})
+  //   await db
+  //     .collection('articles')
+  //     .doc(res.id)
+  //     .set({
+  //       id: res.id,
+  //       title: article.title,
+  //       text: article.text,
+  //       user_id: user.uid,
+  //       usersRef: userRef,
+  //       createdAt: timestamp,
+  //       updatedAt: timestamp
+  //     })
+  //   dispatch('getArticles', article)
+  // },
 
   async deleteArticle({ dispatch }, id) {
     await db

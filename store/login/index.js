@@ -56,8 +56,7 @@ export const actions = {
       .set({
         id: user.uid,
         name: form.name,
-        email: form.email,
-        password: form.password
+        email: form.email
       })
     user.updateProfile({
       displayName: form.name
@@ -165,8 +164,7 @@ export const actions = {
     const userRef = await db.collection('users').doc(id)
     await userRef.update({
       name: form.name,
-      email: form.email,
-      password: form.newPassword
+      email: form.email
     })
     dispatch('getUsers', form)
   },

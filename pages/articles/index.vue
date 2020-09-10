@@ -1,14 +1,13 @@
 <template>
   <v-app>
     <div>
-      <Form />
+      <Form @submit="addArticle" />
       <ArticlesList />
     </div>
   </v-app>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import ArticlesList from '~/components/ArticlesList'
 import Form from '~/components/Form'
 
@@ -18,10 +17,16 @@ export default {
     Form
   },
 
-  computed: {
-    ...mapGetters({
-      user: 'user'
-    })
+  data() {
+    return {
+      articles: []
+    }
+  },
+
+  methods: {
+    addArticle(article) {
+      this.articles.push(article)
+    }
   }
 }
 </script>

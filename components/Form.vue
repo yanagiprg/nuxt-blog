@@ -22,15 +22,18 @@
       small
       outlined
       :disabled="$v.$invalid"
-      @click="addArticle()"
+      @click="addArticle"
       >投稿</v-btn
     >
-    <v-btn small outlined @click="resetForm()">リセット</v-btn>
+    <v-btn small outlined @click="resetForm">リセット</v-btn>
   </v-form>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import { required, maxLength } from 'vuelidate/lib/validators'
+import firebase from '~/plugins/firebase'
 import { validateTitle, validateText } from '~/utils/validations'
 
 export default {
@@ -42,6 +45,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      user: 'login/user'
+    }),
+
     titleErrors() {
       return validateTitle(this.$v.title)
     },
@@ -52,8 +59,29 @@ export default {
   },
 
   methods: {
-    addArticle() {
-      this.$store.dispatch('addArticle', { title: this.title, text: this.text })
+    async addArticle() {
+      const db = firebase.firestore()
+      const timestamp = firebase.firestore.FieldValue.serverTimestamp()
+      const userRef = db.collection('users').doc(this.user.uid)
+      const res = await db.collection('articles').add({})
+      await db
+        .collection('articles')
+        .doc(res.id)
+        .set({
+          id: res.id,
+          title: this.title,
+          text: this.text,
+          user_id: this.user.uid,
+          usersRef: userRef,
+          createdAt: timestamp,
+          updatedAt: timestamp
+        })
+      const article = {
+        title: this.title,
+        text: this.text
+      }
+      this.$store.dispatch('getArticles', article)
+      this.$emit('submit', article)
       this.resetForm()
     },
 
