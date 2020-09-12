@@ -76,7 +76,7 @@
                     color="light-blue darken-4"
                     class="mb-4 mr-4"
                     :disabled="$v.$invalid"
-                    @click="updateUser(id)"
+                    @click="updateUser"
                     >更新</v-btn
                   >
                 </v-form>
@@ -142,7 +142,8 @@ export default {
   },
 
   methods: {
-    updateUser(id) {
+    updateUser() {
+      const id = this.$route.params.id
       const payload = {
         name: this.name,
         email: this.email,
