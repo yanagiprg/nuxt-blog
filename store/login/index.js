@@ -48,20 +48,20 @@ export const mutations = {
 }
 
 export const actions = {
-  async createUser({ state, commit }, form) {
+  async createUser({ state, commit }, payload) {
     const user = _.cloneDeep(state.user)
     await db
       .collection('users')
       .doc(user.uid)
       .set({
         id: user.uid,
-        name: form.name,
-        email: form.email
+        name: payload.name,
+        email: payload.email
       })
-    user.updateProfile({
-      displayName: form.name
+    await user.updateProfile({
+      displayName: payload.name
     })
-    commit('setUsers', _.cloneDeep(form))
+    commit('setUsers', _.cloneDeep(payload))
   },
 
   async signup({ commit }, { email, password }) {
@@ -160,20 +160,20 @@ export const actions = {
     return userData
   },
 
-  async updateUser({ dispatch }, { id, form }) {
+  async updateUser({ dispatch }, { id, payload }) {
     const userRef = await db.collection('users').doc(id)
     await userRef.update({
-      name: form.name,
-      email: form.email
+      name: payload.name,
+      email: payload.email
     })
-    dispatch('getUsers', form)
+    dispatch('getUsers', payload)
   },
 
-  async updateUserName({ commit }, form) {
+  async updateUserName({ commit }, payload) {
     const user = firebase.auth().currentUser
     await user
       .updateProfile({
-        displayName: form.name
+        displayName: payload.name
       })
       .then(() => {
         console.log(user)
@@ -182,9 +182,9 @@ export const actions = {
     commit('setUser', _.cloneDeep(user))
   },
 
-  async updateUserEmailAndPassword({ commit }, { form, user }) {
+  async updateUserEmailAndPassword({ commit, dispatch }, { payload, user }) {
     const email = user.email
-    const password = form.password
+    const password = payload.password
     console.log(email, password)
     const credential = firebase.auth.EmailAuthProvider.credential(
       email,
@@ -192,14 +192,15 @@ export const actions = {
     )
     const authUser = firebase.auth().currentUser
     await authUser.reauthenticateAndRetrieveDataWithCredential(credential)
-    await authUser.updateEmail(form.email).then(() => {
+    await authUser.updateEmail(payload.email).then(() => {
       console.log(user)
       console.log('success change email')
     })
-    await authUser.updatePassword(form.newPassword).then(() => {
+    await authUser.updatePassword(payload.newPassword).then(() => {
       console.log(authUser)
       console.log('success change password')
     })
     commit('setUser', _.cloneDeep(firebase.auth().currentUser))
+    dispatch('login/getUsers', payload)
   }
 }

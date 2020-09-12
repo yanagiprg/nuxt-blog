@@ -103,11 +103,11 @@ export default {
     },
 
     showUser() {
-      if (this.adminUser.admin_id) {
-        this.$router.push('/users')
-      } else {
-        this.$router.push(`/users/${this.user.uid}`)
-      }
+      // if (this.adminUser.admin_id) {
+      this.$router.push('/users')
+      // } else {
+      //   this.$router.push(`/users/${this.user.uid}`)
+      // }
     }
   }
 }

@@ -31,7 +31,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
 import { required, maxLength } from 'vuelidate/lib/validators'
 import firebase from '~/plugins/firebase'
 import { validateTitle, validateText } from '~/utils/validations'
@@ -81,7 +80,6 @@ export default {
         text: this.text
       }
       this.$store.dispatch('getArticles', article)
-      this.$emit('submit', article)
       this.resetForm()
     },
 
