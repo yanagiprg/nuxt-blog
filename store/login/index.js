@@ -110,7 +110,7 @@ export const actions = {
     } else {
       users.push(userData)
     }
-    commit('setUsers', users)
+    await commit('setUsers', users)
   },
 
   async getAdminUser({ state, commit }) {
@@ -201,6 +201,6 @@ export const actions = {
       console.log('success change password')
     })
     commit('setUser', _.cloneDeep(firebase.auth().currentUser))
-    dispatch('login/getUsers', payload)
+    dispatch('getUsers', payload)
   }
 }
