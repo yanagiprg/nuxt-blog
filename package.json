@@ -16,7 +16,7 @@
     "@nuxtjs/dotenv": "^1.4.0",
     "core-js": "2.6.10",
     "firebase": "^7.19.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "nuxt": "^2.14.4",
     "vue-router": "^3.4.1",
     "vuelidate": "^0.7.5"
